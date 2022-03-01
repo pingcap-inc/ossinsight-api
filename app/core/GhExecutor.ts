@@ -81,7 +81,7 @@ export default class GhExecutor {
 
   searchRepos(keyword: any) {
     const SEARCH_REPOS_CACHE_MINUTES = 2;
-    const cache = new Cache(path.join(process.cwd(), 'gh', '.cache', `${keyword}.json`))
+    const cache = new Cache(path.join(process.cwd(), 'gh', '.cache', '_search', `${keyword}.json`))
     return cache.load(() => {
       return this.octokitPool.use(async (octokit) => {
         octokit.log.info(`search repos by keyword ${keyword}`)
