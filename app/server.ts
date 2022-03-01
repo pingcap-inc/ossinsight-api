@@ -4,7 +4,6 @@ import {MysqlQueryExecutor} from "./core/MysqlQueryExecutor";
 import {DefaultState} from "koa";
 import type {ContextExtends} from "../index";
 import GhExecutor from "./core/GhExecutor";
-import consola from "consola";
 
 export default function server(router: Router<DefaultState, ContextExtends>) {
 
@@ -51,7 +50,7 @@ export default function server(router: Router<DefaultState, ContextExtends>) {
 
   router.get('/gh/repos/search', async ctx => {
     const { keyword } = ctx.query;
-    consola.info(ctx.query)
+
     try {
       if (keyword == null || keyword.length === 0) {
         ctx.response.status = 400;
