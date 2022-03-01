@@ -4,6 +4,7 @@ import {MysqlQueryExecutor} from "./core/MysqlQueryExecutor";
 import {DefaultState} from "koa";
 import type {ContextExtends} from "../index";
 import GhExecutor from "./core/GhExecutor";
+import consola from "consola";
 
 export default function server(router: Router<DefaultState, ContextExtends>) {
 
@@ -37,6 +38,28 @@ export default function server(router: Router<DefaultState, ContextExtends>) {
     const { owner, repo } = ctx.params
     try {
       const res = await ghExecutor.getRepo(owner, repo)
+
+      ctx.response.status = 200
+      ctx.response.body = res
+    } catch (e: any) {
+
+      ctx.logger.error('request failed %s', ctx.request.originalUrl, e)
+      ctx.response.status = e?.response?.status ?? e?.status ?? 500
+      ctx.response.body = e?.response?.data ?? e?.message ?? String(e)
+    }
+  })
+
+  router.get('/gh/repos/search', async ctx => {
+    const { keyword } = ctx.query;
+    consola.info(ctx.query)
+    try {
+      if (keyword == null || keyword.length === 0) {
+        ctx.response.status = 400;
+        ctx.response.body = "keyword can not be empty.";
+        return
+      }
+
+      const res = await ghExecutor.searchRepos(keyword)
 
       ctx.response.status = 200
       ctx.response.body = res
