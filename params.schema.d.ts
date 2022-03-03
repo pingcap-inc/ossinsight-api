@@ -39,11 +39,11 @@ export interface Params {
    */
   default?: string;
   /**
-   * Enums for prefetching and validating
+   * Enums for prefetching and validating, default is no prefetching and validating
    */
-  enums: string | string[] | false;
+  enums: string | string[];
 }
 export interface Restriction {
   fields: string[];
-  enums: string[][];
+  enums?: string[][];
 }
