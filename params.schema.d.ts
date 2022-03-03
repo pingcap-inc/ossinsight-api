@@ -14,6 +14,10 @@ export interface ParamsSchema {
    * Query params declaration
    */
   params: Params[];
+  /**
+   * Special restrictions for params
+   */
+  restrictions?: Restriction[];
 }
 export interface Params {
   /**
@@ -38,4 +42,8 @@ export interface Params {
    * Enums for prefetching and validating
    */
   enums: string | string[] | false;
+}
+export interface Restriction {
+  fields: string[];
+  enums: string[][];
 }

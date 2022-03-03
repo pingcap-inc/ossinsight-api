@@ -3,6 +3,7 @@ import * as fs from 'fs/promises'
 import type {ParamsSchema} from './params.schema'
 
 // TODO: codebase for prefetch service
+// TODO: consider restrictions, see queries/contributors-history/params.json
 
 async function getQueries(): Promise<Record<string, ParamsSchema>> {
   const base = path.join(process.cwd(), 'queries')

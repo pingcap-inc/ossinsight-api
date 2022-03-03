@@ -12,6 +12,13 @@
       "items": {
         "$ref": "#/definitions/Params"
       }
+    },
+    "restrictions": {
+      "description": "Special restrictions for params",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Restriction"
+      }
     }
   },
   "additionalProperties": false,
@@ -72,6 +79,28 @@
         "replaces",
         "enums"
       ]
+    },
+    "Restriction": {
+      "type": "object",
+      "properties": {
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "enums": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": ["fields", "enums"]
     }
   }
 }
