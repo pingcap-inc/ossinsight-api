@@ -24,7 +24,7 @@ async function main () {
   const presets = await getPresets()
 
   Object.entries(queries).forEach(([key, schema]) => {
-    if(schema.params.find(param => param.enums === false)) {
+    if(schema.params.find(param => !param.enums)) {
       console.log(key, 0)
     } else {
       const sizes = schema.params.map(({ enums }) => {
