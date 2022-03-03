@@ -70,8 +70,7 @@
       "additionalProperties": false,
       "required": [
         "name",
-        "replaces",
-        "enums"
+        "replaces"
       ]
     },
     "Restriction": {
@@ -94,7 +93,7 @@
         }
       },
       "additionalProperties": false,
-      "required": ["fields"]
+      "required": ["fields", "enums"]
     }
   }
 }
