@@ -21,7 +21,9 @@ jobs:
         run: pnpm i --frozen-lockfile --strict-peer-dependencies
 
       - name: validate all params.json
-        run: pnpx ajv -s params.schema.json -d "queries/*/params.json"
+        run: |
+          pnpm run gen:schema-ts
+          pnpm run validate:params
 
       - name: build
         run: pnpm run build

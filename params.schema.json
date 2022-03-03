@@ -3,11 +3,11 @@
   "type": "object",
   "properties": {
     "cacheHours": {
-      "title": "Cache time in hours",
+      "description": "Cache time in hours",
       "type": "number"
     },
     "params": {
-      "title": "Define types for ",
+      "description": "Query params declaration",
       "type": "array",
       "items": {
         "$ref": "#/definitions/Params"
@@ -16,40 +16,44 @@
   },
   "additionalProperties": false,
   "required": [
-    "cacheHours"
+    "cacheHours",
+    "params"
   ],
   "definitions": {
     "Params": {
       "type": "object",
       "properties": {
         "name": {
-          "title": "URL Search param name for the query",
+          "description": "URL Search param name for the query",
           "type": "string"
         },
         "replaces": {
-          "title": "Replacing substring in the query sql template",
-          "description": "Replacing uses `String.replaceAll`, please make sure the replacing substring is not substring of other texts",
+          "description": "Replacing substring in the query sql template. Replacing uses `String.replaceAll`, please make sure the replacing substring is not substring of other texts",
           "type": "string"
         },
         "template": {
+          "description": "Replacing templates, mapped by search value",
           "type": "object",
-          "title": "Replacing templates, mapped by search value",
           "additionalProperties": {
             "type": "string"
           }
         },
+        "default": {
+          "description": "Default input value",
+          "type": "string"
+        },
         "enums": {
-          "title": "Enums for prefetching and validating",
+          "description": "Enums for prefetching and validating",
           "oneOf": [
             {
-              "title": "The allowed values and should be prefetched",
+              "description": "The allowed values and should be prefetched",
               "type": "array",
               "items": {
                 "type": "string"
               }
             },
             {
-              "title": "Prevent any prefetching and allow any input.",
+              "description": "Prevent any prefetching and allow any input.",
               "type": "boolean",
               "enum": [
                 false
