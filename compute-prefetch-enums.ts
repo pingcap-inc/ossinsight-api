@@ -1,14 +1,14 @@
 import * as path from 'path'
 import * as fs from 'fs/promises'
-import type {ParamsSchema} from './params.schema'
+import type {QuerySchema} from './params.schema'
 
 // TODO: codebase for prefetch service
 // TODO: consider restrictions, see queries/contributors-history/params.json
 
-async function getQueries(): Promise<Record<string, ParamsSchema>> {
+async function getQueries(): Promise<Record<string, QuerySchema>> {
   const base = path.join(process.cwd(), 'queries')
   const paths = await fs.readdir(base)
-  const res: Record<string, ParamsSchema> = {}
+  const res: Record<string, QuerySchema> = {}
   for (let p of paths) {
     res[p] = JSON.parse(await fs.readFile(path.join(base, p, "params.json"), {encoding: "utf-8"}))
   }

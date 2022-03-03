@@ -18,8 +18,7 @@
     },
     {
       "name": "year",
-      "replaces": "2021",
-      "enums": false
+      "replaces": "2021"
     }
   ]
 }

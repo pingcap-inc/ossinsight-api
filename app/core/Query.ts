@@ -2,9 +2,9 @@ import {mkdir, readFile} from 'fs/promises'
 import path from 'path'
 import Cache, {CachedData} from "./Cache";
 import {DateTime} from "luxon";
-import type { ParamsSchema } from '../../params.schema'
+import type { QuerySchema } from '../../params.schema'
 
-export type QueryParams = ParamsSchema
+export type QueryParams = QuerySchema
 
 export class BadParamsError extends Error {
   readonly msg: string

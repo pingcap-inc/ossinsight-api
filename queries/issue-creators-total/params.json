@@ -3,8 +3,7 @@
   "params": [
     {
       "name": "repoName",
-      "replaces": "pingcap/tidb",
-      "enums": false
+      "replaces": "pingcap/tidb"
     }
   ]
 }

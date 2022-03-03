@@ -13,13 +13,11 @@
     },
     {
       "name": "year",
-      "replaces": "2021",
-      "enums": false
+      "replaces": "2021"
     },
     {
       "name": "action",
-      "replaces": "closed",
-      "enums": false
+      "replaces": "closed"
     },
     {
       "name": "merged",
@@ -27,8 +25,7 @@
       "template": {
         "true": "AND github_events.pr_merged IS TRUE",
         "*": ""
-      },
-      "enums": false
+      }
     }
   ]
 }
