@@ -46,6 +46,10 @@
           "description": "Enums for prefetching and validating",
           "oneOf": [
             {
+              "description": "Predefined query params name",
+              "type": "string"
+            },
+            {
               "description": "The allowed values and should be prefetched",
               "type": "array",
               "items": {

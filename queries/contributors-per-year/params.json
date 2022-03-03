@@ -3,19 +3,23 @@
   "params": [
     {
       "name": "repo",
-      "replaces": "db_repos"
+      "replaces": "db_repos",
+      "enums": "repo_subset"
     },
     {
       "name": "n",
-      "replaces": "10"
+      "replaces": "10",
+      "enums": "n"
     },
     {
       "name": "year",
-      "replaces": "2021"
+      "replaces": "2021",
+      "enums": false
     },
     {
       "name": "action",
-      "replaces": "closed"
+      "replaces": "closed",
+      "enums": false
     },
     {
       "name": "merged",
@@ -23,7 +27,8 @@
       "template": {
         "true": "AND github_events.pr_merged IS TRUE",
         "*": ""
-      }
+      },
+      "enums": false
     }
   ]
 }

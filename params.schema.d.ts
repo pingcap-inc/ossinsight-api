@@ -37,5 +37,5 @@ export interface Params {
   /**
    * Enums for prefetching and validating
    */
-  enums: string[] | false;
+  enums: string | string[] | false;
 }

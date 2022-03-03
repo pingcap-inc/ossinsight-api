@@ -3,11 +3,13 @@
   "params": [
     {
       "name": "repoName1",
-      "replaces": "pingcap/tidb"
+      "replaces": "pingcap/tidb",
+      "enums": false
     },
     {
       "name": "repoName2",
-      "replaces": "tikv/tikv"
+      "replaces": "tikv/tikv",
+      "enums": false
     }
   ]
 }
