@@ -7,9 +7,17 @@
 
 export interface QuerySchema {
   /**
-   * Cache time in hours
+   * Cache time in hours, -1 indicates that the query cache will not expire
    */
   cacheHours: number;
+  /**
+   * Refresh time in minutes
+   */
+  refreshMinutes?: number;
+  /**
+   * Only return data from the cache
+   */
+  onlyFromCache?: boolean;
   /**
    * Query params declaration
    */

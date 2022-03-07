@@ -156,9 +156,9 @@ async function prefetchQueries(
   await asyncPool(PREFETCH_CONCURRENT, queryJobs, async ({ queryName, params }) => {
     const qStart = new Date();
     // Do query with the rest parameter combines.
-    const query = new Query(queryName)
+    const query = new Query(queryName, redisClient, queryExecutor)
     try {
-      await query.run(params, redisClient, queryExecutor)
+      await query.run(params,true)
     } catch (err) {
       logger.error(`Failed to prefetch query %s with params: %s`, queryName, params, err)
     }

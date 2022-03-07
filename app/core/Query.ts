@@ -47,7 +47,11 @@ export default class Query {
   queryDef: QuerySchema | undefined = undefined
   private readonly loadingPromise: Promise<boolean>
 
-  constructor(public readonly name: string) {
+  constructor(
+    public readonly name: string,
+    public readonly redisClient: RedisClientType<RedisDefaultModules & RedisModules, RedisScripts>,
+    public readonly executor: MysqlQueryExecutor<unknown>,
+  ) {
     this.path = path.join(process.cwd(), 'queries', name)
     const templateFilePath = path.join(this.path, 'template.sql')
     const paramsFilePath = path.join(this.path, 'params.json')
@@ -74,16 +78,18 @@ export default class Query {
 
   async run<T>(
     params: Record<string, any>,
-    redisClient: RedisClientType<RedisDefaultModules & RedisModules, RedisScripts>,
-    executor: MysqlQueryExecutor<unknown>
+    ignoreOnlyFromCache: boolean = false
   ): Promise<CachedData<T>> {
     const sql = await this.buildSql(params)
     const key = `query:${this.name}:${this.queryDef!.params.map(p => params[p.name]).join('_')}`;
-    const cacheHours = this.queryDef!.cacheHours;
-    const cache = new Cache<T>(key, cacheHours * 3600,redisClient)
+    const { cacheHours = -1, refreshMinutes } = this.queryDef!;
+    const cacheTime = cacheHours === -1 ? -1 : cacheHours * 3600;
+    const cache = new Cache<T>(this.redisClient, key, cacheTime, refreshMinutes)
+    const onlyFromCache = ignoreOnlyFromCache ? false : this.queryDef?.onlyFromCache;
+
     return cache.load(async () => {
       const start = DateTime.now()
-      const data = await executor.execute(sql)
+      const data = await this.executor.execute(sql)
       const now = DateTime.now()
       return {
         params: params,
@@ -93,6 +99,6 @@ export default class Query {
         expiresAt: now.plus({hours: cacheHours}),
         data: data as any
       }
-    })
+    }, onlyFromCache)
   }
 }

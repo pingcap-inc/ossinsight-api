@@ -68,7 +68,7 @@ export default class GhExecutor {
     // TODO: global config
     const GET_REPO_CACHE_MINUTES = 2
     const key = `gh:get_repo:${owner}_${repo}`;
-    const cache = new Cache(key, GET_REPO_CACHE_MINUTES * 60, this.redisClient)
+    const cache = new Cache(this.redisClient, key, GET_REPO_CACHE_MINUTES * 60)
     return cache.load(() => {
       return this.octokitPool.use(async (octokit) => {
         octokit.log.info(`get repo ${owner}/${repo}`)
@@ -86,7 +86,7 @@ export default class GhExecutor {
   searchRepos(keyword: any) {
     const SEARCH_REPOS_CACHE_MINUTES = 60 * 24;
     const key = `gh:search_repos:${keyword}`;
-    const cache = new Cache(key, SEARCH_REPOS_CACHE_MINUTES * 60, this.redisClient)
+    const cache = new Cache(this.redisClient, key, SEARCH_REPOS_CACHE_MINUTES * 60)
     return cache.load(() => {
       return this.octokitPool.use(async (octokit) => {
         octokit.log.info(`search repos by keyword ${keyword}`)
