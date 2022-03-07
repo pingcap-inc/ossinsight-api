@@ -17,8 +17,9 @@ const PREFETCH_CONCURRENT = process.env.PREFETCH_CONCURRENT ? parseInt(process.e
 const logger = consola.withTag('prefetch');
 
 interface QueryJob {
-  id: number,
+  id?: number,
   queryName: string;
+  refreshHours: number,
   params: {
     [key:string]: string;
   }
@@ -100,10 +101,9 @@ async function prefetchQueries(
   presets: Record<string, string[]>
 ) {
   const queryJobs: QueryJob[] = [];
-  let jobID = 1;
 
   for (const [queryName, queryDef] of Object.entries(queries)) {
-    if(queryDef.params.find(param => !param.enums) || queryDef.params.length === 0) {
+    if(queryDef.params.find(param => !param.enums) && queryDef.params.length !== 0) {
       logger.debug(`Skip prefetching query ${queryName}.`)
       continue;
     }
@@ -148,33 +148,42 @@ async function prefetchQueries(
 
     logger.info(`Create prefetch job for query %s with %d params combines.`, queryName, paramCombines.length)
 
+
     for (let paramCombine of paramCombines) {
       queryJobs.push({
-        id: jobID++,
         queryName: queryName,
+        refreshHours: queryDef.refreshHours || -1,
         params: paramCombine
       })
     }
   }
 
+  let jobID = 1;
+  queryJobs.sort((a, b) => {
+    return a.refreshHours - b.refreshHours;
+  }).map((job) => {
+    job.id = jobID++;
+  })
+
   logger.info('Prefetch jobs: %d', queryJobs.length)
 
+  const n = queryJobs.length;
   const start = new Date();
   await asyncPool(PREFETCH_CONCURRENT, queryJobs, async ({ id, queryName, params }) => {
     const qStart = new Date();
     // Do query with the rest parameter combines.
-    logger.info("[%d] Prefetch query %s with params: %s", id, queryName, JSON.stringify(params));
+    logger.info("[%d/%d] Prefetch query %s with params: %s", id, n, queryName, JSON.stringify(params));
     const query = new Query(queryName, redisClient, queryExecutor)
     try {
       await query.run(params,true)
     } catch (err) {
-      logger.error('[%d] Failed to prefetch query %s with params: %s', id, queryName, JSON.stringify(params), err)
+      logger.error('[%d/%d] Failed to prefetch query %s with params: %s', id, n, queryName, JSON.stringify(params), err)
     }
     const qEnd = new Date();
 
     // Output the statistics info.
     const qCostTime = (qEnd.getTime() - qStart.getTime()) / 1000;
-    logger.success("[%d] Finish prefetch %s, start at: %s, end at: %s, cost: %d s", id, queryName, qStart, qEnd, qCostTime);
+    logger.success("[%d/%d] Finish prefetch %s, start at: %s, end at: %s, cost: %d s", id, n, queryName, qStart, qEnd, qCostTime);
   });
   const end = new Date();
   const cost = end.getTime() - start.getTime();
