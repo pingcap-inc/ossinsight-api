@@ -78,17 +78,11 @@ export default class Query {
     return buildParams(this.template!, this.queryDef!, params)
   }
 
-  async run<T>(
-    params: Record<string, any>,
-    ignoreOnlyFromCache: boolean = false
-  ): Promise<CachedData<T>> {
+  async run <T> (params: Record<string, any>, refreshCache: boolean = false): Promise<CachedData<T>> {
     const sql = await this.buildSql(params)
     const key = `query:${this.name}:${this.queryDef!.params.map(p => params[p.name]).join('_')}`;
-    const { cacheHours = -1, refreshMinutes } = this.queryDef!;
-    const cacheTime = cacheHours === -1 ? -1 : cacheHours * 3600;
-    const cache = new Cache<T>(this.redisClient, key, cacheTime, refreshMinutes)
-    const onlyFromCache = ignoreOnlyFromCache ? false : this.queryDef?.onlyFromCache;
-
+    const { cacheHours = -1, refreshHours = -1, onlyFromCache = false } = this.queryDef!;
+    const cache = new Cache<T>(this.redisClient, key, cacheHours, refreshHours, onlyFromCache, refreshCache)
     return cache.load(async () => {
       const start = DateTime.now()
       const data = await this.executor.execute(sql)
@@ -101,6 +95,6 @@ export default class Query {
         expiresAt: cacheHours === -1 ? MAX_CACHE_TIME : now.plus({hours: cacheHours}),
         data: data as any
       }
-    }, onlyFromCache)
+    })
   }
 }

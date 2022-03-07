@@ -7,8 +7,8 @@
       "description": "Cache time in hours, -1 indicates that the query cache will not expire",
       "type": "number"
     },
-    "refreshMinutes": {
-      "description": "Refresh time in minutes",
+    "refreshHours": {
+      "description": "Refresh cache time in hours, -1 indicates not to refresh.",
       "type": "number"
     },
     "onlyFromCache": {
@@ -33,6 +33,7 @@
   "additionalProperties": false,
   "required": [
     "cacheHours",
+    "refreshHours",
     "params"
   ],
   "definitions": {

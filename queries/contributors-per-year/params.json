@@ -1,6 +1,6 @@
 {
   "cacheHours": -1,
-  "refreshMinutes": 14400,
+  "refreshHours": 240,
   "onlyFromCache": true,
   "params": [
     {

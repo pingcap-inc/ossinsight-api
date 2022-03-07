@@ -11,9 +11,9 @@ export interface QuerySchema {
    */
   cacheHours: number;
   /**
-   * Refresh time in minutes
+   * Refresh cache time in hours
    */
-  refreshMinutes?: number;
+  refreshHours?: number;
   /**
    * Only return data from the cache
    */
