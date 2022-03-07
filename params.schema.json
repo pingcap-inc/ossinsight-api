@@ -33,7 +33,6 @@
   "additionalProperties": false,
   "required": [
     "cacheHours",
-    "refreshHours",
     "params"
   ],
   "definitions": {

@@ -11,7 +11,7 @@ export interface QuerySchema {
    */
   cacheHours: number;
   /**
-   * Refresh cache time in hours
+   * Refresh cache time in hours, -1 indicates not to refresh.
    */
   refreshHours?: number;
   /**
