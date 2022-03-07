@@ -77,6 +77,7 @@ export default class Cache<T> {
 
       // Notice: If the current query has no cache or the time that from last requested to now
       // has exceeded the period specified by refreshMinutes, then try to query data from database.
+      logger.debug('Querying for %s', this.key)
       const result = await fallback()
 
       // Write result to cache.

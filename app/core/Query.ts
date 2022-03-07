@@ -6,6 +6,8 @@ import {MysqlQueryExecutor} from "./MysqlQueryExecutor";
 import Cache, {CachedData} from "./Cache";
 import {RedisClientType, RedisDefaultModules, RedisModules, RedisScripts} from "redis";
 
+const MAX_CACHE_TIME = DateTime.fromISO('2099-12-31T00:00:00')
+
 export class BadParamsError extends Error {
   readonly msg: string
   constructor(public readonly name: string, message: string) {
@@ -96,7 +98,7 @@ export default class Query {
         requestedAt: start.toISO(),
         spent: now.diff(start).as('seconds'),
         sql,
-        expiresAt: now.plus({hours: cacheHours}),
+        expiresAt: cacheHours === -1 ? MAX_CACHE_TIME : now.plus({hours: cacheHours}),
         data: data as any
       }
     }, onlyFromCache)
