@@ -114,13 +114,13 @@ SELECT
     IFNULL(PullRequestReviewCommentEvents.count, 0) pull_request_review_comment_events,
     IFNULL(CommitCommentEvents.count, 0)            commit_comment_events
 FROM github_events gh
-LEFT JOIN WatchEvents ON gh.repo_id = WatchEvents.repo_id
-LEFT JOIN PullRequestEvents ON gh.repo_id = PullRequestEvents.repo_id
-LEFT JOIN IssuesEvents ON gh.repo_id = IssuesEvents.repo_id
-LEFT JOIN IssueCommentEvents ON gh.repo_id = IssueCommentEvents.repo_id
-LEFT JOIN PullRequestReviewEvents ON gh.repo_id = PullRequestReviewEvents.repo_id
-LEFT JOIN PullRequestReviewCommentEvents ON gh.repo_id = PullRequestReviewCommentEvents.repo_id
-LEFT JOIN CommitCommentEvents ON gh.repo_id = CommitCommentEvents.repo_id
+    LEFT JOIN WatchEvents ON gh.repo_id = WatchEvents.repo_id
+    LEFT JOIN PullRequestEvents ON gh.repo_id = PullRequestEvents.repo_id
+    LEFT JOIN IssuesEvents ON gh.repo_id = IssuesEvents.repo_id
+    LEFT JOIN IssueCommentEvents ON gh.repo_id = IssueCommentEvents.repo_id
+    LEFT JOIN PullRequestReviewEvents ON gh.repo_id = PullRequestReviewEvents.repo_id
+    LEFT JOIN PullRequestReviewCommentEvents ON gh.repo_id = PullRequestReviewCommentEvents.repo_id
+    LEFT JOIN CommitCommentEvents ON gh.repo_id = CommitCommentEvents.repo_id
 WHERE (
     WatchEvents.count > 0
     OR PullRequestEvents.count > 0
