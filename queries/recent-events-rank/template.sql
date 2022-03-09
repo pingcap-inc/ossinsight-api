@@ -16,7 +16,7 @@ WITH
         WHERE type = 'WatchEvent'
             AND created_at >= (SELECT start FROM datetime_range)
             AND created_at < (SELECT end FROM datetime_range)
-            AND actor_login not regexp '(.*-robot)|(travis.*bot)|(k8s-.*)|(jenkins-.*)|(.*-jenkins)|(codecov-.*)|(.*-ci)|(.*\[bot\].*)|(bot-.*)|(.*-bot)|(.*bot)|(.*-gerrit)'
+            AND actor_login NOT REGEXP '(.*-robot)|(travis.*bot)|(k8s-.*)|(jenkins-.*)|(.*-jenkins)|(codecov-.*)|(.*-ci)|(.*\[bot\].*)|(bot-.*)|(.*-bot)|(.*bot)|(.*-gerrit)'
         GROUP BY repo_id
         HAVING count > 0
     ),
@@ -30,7 +30,7 @@ WITH
         WHERE type = 'PullRequestEvent'
             AND created_at >= (SELECT start FROM datetime_range)
             AND created_at < (SELECT end FROM datetime_range)
-            AND actor_login not regexp '(.*-robot)|(travis.*bot)|(k8s-.*)|(jenkins-.*)|(.*-jenkins)|(codecov-.*)|(.*-ci)|(.*\[bot\].*)|(bot-.*)|(.*-bot)|(.*bot)|(.*-gerrit)'
+            AND actor_login NOT REGEXP '(.*-robot)|(travis.*bot)|(k8s-.*)|(jenkins-.*)|(.*-jenkins)|(codecov-.*)|(.*-ci)|(.*\[bot\].*)|(bot-.*)|(.*-bot)|(.*bot)|(.*-gerrit)'
         GROUP BY repo_id
         HAVING count > 0
     ),
@@ -44,7 +44,7 @@ WITH
         WHERE type = 'IssuesEvent'
             AND created_at >= (SELECT start FROM datetime_range)
             AND created_at < (SELECT end FROM datetime_range)
-            AND actor_login not regexp '(.*-robot)|(travis.*bot)|(k8s-.*)|(jenkins-.*)|(.*-jenkins)|(codecov-.*)|(.*-ci)|(.*\[bot\].*)|(bot-.*)|(.*-bot)|(.*bot)|(.*-gerrit)'
+            AND actor_login NOT REGEXP '(.*-robot)|(travis.*bot)|(k8s-.*)|(jenkins-.*)|(.*-jenkins)|(codecov-.*)|(.*-ci)|(.*\[bot\].*)|(bot-.*)|(.*-bot)|(.*bot)|(.*-gerrit)'
         GROUP BY repo_id
         HAVING count > 0
     ),
@@ -58,7 +58,7 @@ WITH
         WHERE type = 'IssueCommentEvent'
             AND created_at >= (SELECT start FROM datetime_range)
             AND created_at < (SELECT end FROM datetime_range)
-            AND actor_login not regexp '(.*-robot)|(travis.*bot)|(k8s-.*)|(jenkins-.*)|(.*-jenkins)|(codecov-.*)|(.*-ci)|(.*\[bot\].*)|(bot-.*)|(.*-bot)|(.*bot)|(.*-gerrit)'
+            AND actor_login NOT REGEXP '(.*-robot)|(travis.*bot)|(k8s-.*)|(jenkins-.*)|(.*-jenkins)|(codecov-.*)|(.*-ci)|(.*\[bot\].*)|(bot-.*)|(.*-bot)|(.*bot)|(.*-gerrit)'
         GROUP BY repo_id
         HAVING count > 0
     ),
@@ -71,7 +71,7 @@ WITH
         WHERE type = 'PullRequestReviewEvent'
             AND created_at >= (SELECT start FROM datetime_range)
             AND created_at < (SELECT end FROM datetime_range)
-            AND actor_login not regexp '(.*-robot)|(travis.*bot)|(k8s-.*)|(jenkins-.*)|(.*-jenkins)|(codecov-.*)|(.*-ci)|(.*\[bot\].*)|(bot-.*)|(.*-bot)|(.*bot)|(.*-gerrit)'
+            AND actor_login NOT REGEXP '(.*-robot)|(travis.*bot)|(k8s-.*)|(jenkins-.*)|(.*-jenkins)|(codecov-.*)|(.*-ci)|(.*\[bot\].*)|(bot-.*)|(.*-bot)|(.*bot)|(.*-gerrit)'
         GROUP BY repo_id
         HAVING count > 0
     ),
@@ -84,7 +84,7 @@ WITH
         WHERE type = 'PullRequestReviewCommentEvent'
             AND created_at >= (SELECT start FROM datetime_range)
             AND created_at < (SELECT end FROM datetime_range)
-            AND actor_login not regexp '(.*-robot)|(travis.*bot)|(k8s-.*)|(jenkins-.*)|(.*-jenkins)|(codecov-.*)|(.*-ci)|(.*\[bot\].*)|(bot-.*)|(.*-bot)|(.*bot)|(.*-gerrit)'
+            AND actor_login NOT REGEXP '(.*-robot)|(travis.*bot)|(k8s-.*)|(jenkins-.*)|(.*-jenkins)|(codecov-.*)|(.*-ci)|(.*\[bot\].*)|(bot-.*)|(.*-bot)|(.*bot)|(.*-gerrit)'
         GROUP BY repo_id
         HAVING count > 0
     ),
@@ -97,7 +97,7 @@ WITH
         WHERE type = 'CommitCommentEvent'
             AND created_at >= (SELECT start FROM datetime_range)
             AND created_at < (SELECT end FROM datetime_range)
-            AND actor_login not regexp '(.*-robot)|(travis.*bot)|(k8s-.*)|(jenkins-.*)|(.*-jenkins)|(codecov-.*)|(.*-ci)|(.*\[bot\].*)|(bot-.*)|(.*-bot)|(.*bot)|(.*-gerrit)'
+            AND actor_login NOT REGEXP '(.*-robot)|(travis.*bot)|(k8s-.*)|(jenkins-.*)|(.*-jenkins)|(codecov-.*)|(.*-ci)|(.*\[bot\].*)|(bot-.*)|(.*-bot)|(.*bot)|(.*-gerrit)'
         GROUP BY repo_id
         HAVING count > 0
     )
@@ -132,7 +132,7 @@ WHERE (
 )
     AND created_at >= (SELECT start FROM datetime_range)
     AND created_at < (SELECT end FROM datetime_range)
-    AND actor_login not regexp '(.*-robot)|(travis.*bot)|(k8s-.*)|(jenkins-.*)|(.*-jenkins)|(codecov-.*)|(.*-ci)|(.*\[bot\].*)|(bot-.*)|(.*-bot)|(.*bot)|(.*-gerrit)'
+    AND actor_login NOT REGEXP '(.*-robot)|(travis.*bot)|(k8s-.*)|(jenkins-.*)|(.*-jenkins)|(codecov-.*)|(.*-ci)|(.*\[bot\].*)|(bot-.*)|(.*-bot)|(.*bot)|(.*-gerrit)'
 GROUP BY gh.repo_name
 ORDER BY history_events DESC
 LIMIT 20
