@@ -76,8 +76,8 @@ else
   wait=`expr $duration + 5`
   sleep $wait
 
-  report_file="${REPORT_DIR}/"`date "+%Y-%m-%d"`"_t${threads}_c${connections}_d${duration}.md"
-  printf '# Performance Report\n' > "$report_file"
+  report_file="${REPORT_DIR}/"`date "+%Y_%m_%d_%H_%M_%S"`"_t${threads}_c${connections}_d${duration}.md"
+  printf '# Performance Report\n\n' > "$report_file"
   echo '| Query Name | Average Latency | 50% Latency | 75% Latency | 90% Latency | 99% Latency | Request in Duration | Request/Sec | Socket Errors | HTTP Errors | ' >> "$report_file"
   echo '|  ----  | ----  | ----  | ----  | ----  | ----  | ----  | ----  | ----  | ----  |' >> "$report_file"
 
