@@ -19,7 +19,7 @@ wrk.scheme = "http"
 
 request = function()
     current = reposList[counter % #reposList + 1]
-    path = "https://community-preview-contributor.tidb.io/q/stars-history?repoName1=" .. current.repo1 .. "&repoName2=" .. current.repo2
+    path = "https://community-preview-contributor.tidb.io/q/pull-requests-history?repoName1=" .. current.repo1 .. "&repoName2=" .. current.repo2
     counter = counter + 1
     return wrk.format(nil, path)
 end
