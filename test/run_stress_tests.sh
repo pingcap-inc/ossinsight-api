@@ -81,7 +81,6 @@ else
   echo '| Query Name | Average Latency | 50% Latency | 75% Latency | 90% Latency | 99% Latency | Request in Duration | Request/Sec | Socket Errors | HTTP Errors | ' >> "$report_file"
   echo '|  ----  | ----  | ----  | ----  | ----  | ----  | ----  | ----  | ----  | ----  |' >> "$report_file"
 
-  total_qps=0
   for item_name in "${script_files[@]}"
   do
     log_file="${RESULT_DIR}/${item_name}.lua_t${threads}_c${connections}_d${duration}_result.log"
