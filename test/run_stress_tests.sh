@@ -81,6 +81,7 @@ else
   echo '| Query Name | Average Latency | 50% Latency | 75% Latency | 90% Latency | 99% Latency | Request in Duration | Request/Sec | Socket Errors | HTTP Errors | ' >> "$report_file"
   echo '|  ----  | ----  | ----  | ----  | ----  | ----  | ----  | ----  | ----  | ----  |' >> "$report_file"
 
+  total_qps=0
   for item_name in "${script_files[@]}"
   do
     log_file="${RESULT_DIR}/${item_name}.lua_t${threads}_c${connections}_d${duration}_result.log"
@@ -91,10 +92,15 @@ else
     p99_latency=`cat "${log_file}" | grep -m 1 '99%' | awk '{print $2}'`
 
     request_in_duration=`cat "${log_file}" | grep 'requests'`
-    request_per_seconds=`cat "${log_file}" | grep 'Requests/sec' | awk '{print $2}'`
+    request_per_seconds=`cat "${log_file}" | grep 'Requests/sec' | awk '{print flot($2)}'`
     socket_errors=`cat "${log_file}" | grep 'Socket errors'`
     http_errors=`cat "${log_file}" | grep 'Non-2xx or 3xx responses' | awk '{print $5}'`
 
+    total_qps=`expr $total_qps+$request_per_seconds`
+
     echo "| ${item_name} | ${average_latency} | ${p50_latency} | ${p75_latency} | ${p90_latency} | ${p99_latency} | ${request_in_duration} | ${request_per_seconds} | ${socket_errors} | ${http_errors} |" >> "$report_file"
   done
+
+  echo "Total QPS: ${total_qps}" >> "$report_file"
+
 fi
