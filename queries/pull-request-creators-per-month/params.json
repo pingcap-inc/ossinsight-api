@@ -2,13 +2,13 @@
   "cacheHours": 1,
   "params": [
     {
-      "name": "repoName1",
+      "name": "repoId1",
       "replaces": "41986369",
       "pattern": "^[1-9]\\d*$"
     },
     {
-      "name": "repoName2",
-      "replaces": "tikv/tikv",
+      "name": "repoId2",
+      "replaces": "41986370",
       "pattern": "^[1-9]\\d*$"
     }
   ]

@@ -6,7 +6,7 @@ WITH tmp AS (
     FROM github_events
     use index(index_github_events_on_repo_id)
     WHERE
-        type = 'PullRequestEvent' and repo_name in ('pingcap/tidb', 'tikv/tikv') and action = 'opened'
+        type = 'PullRequestEvent' and repo_name in (41986369, 41986370) and action = 'opened'
     GROUP BY repo_name, event_month
     ORDER BY 1 ASC, 2
 ), tmp1 AS (

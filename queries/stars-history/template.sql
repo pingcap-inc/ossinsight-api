@@ -7,7 +7,7 @@ WITH tmp AS (
     use index (index_github_events_on_repo_id)
     WHERE
         type = 'WatchEvent'
-        AND repo_name in ('pingcap/tidb', 'tikv/tikv')
+        AND repo_id in (41986369, 41986370)
     GROUP BY repo_name, event_month
     ORDER BY 1 ASC, 2
 ), tmp1 AS (
