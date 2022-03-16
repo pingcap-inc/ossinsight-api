@@ -4,7 +4,7 @@ WITH tmp AS (
         repo_name,
         COUNT(distinct actor_id) as month_stars_count
     FROM github_events
-    use index (index_github_events_on_repo_name)
+    use index (index_github_events_on_repo_id)
     WHERE
         type = 'WatchEvent'
         AND repo_name in ('pingcap/tidb', 'tikv/tikv')
