@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 import consola, {Consola} from 'consola';
 import cors from '@koa/cors';
 import { validateProcessEnv } from './app/env';
-import {requestCounter} from "./app/metrics";
+import {requestCounter, requestProcessTimer} from "./app/metrics";
 
 const RateLimit = require('koa2-ratelimit').RateLimit;
 const Stores = require('koa2-ratelimit').Stores;
@@ -39,13 +39,17 @@ app.use(async (ctx, next) => {
   await next()
 })
 app.use(async (ctx, next) => {
+  const url = ctx.request.url
+  const stop = requestProcessTimer.startTimer({ url })
   try {
-    requestCounter.labels({ phase: 'start' }).inc()
+    requestCounter.labels({ url, phase: 'start' }).inc()
     await next()
-    requestCounter.labels({ phase: 'success', status: ctx.status}).inc()
+    requestCounter.labels({ url, phase: 'success', status: ctx.status}).inc()
   } catch (e) {
-    requestCounter.labels({ phase: 'error' }).inc()
+    requestCounter.labels({ url, phase: 'error' }).inc()
     throw e
+  } finally {
+    stop()
   }
 })
 app.use(cors({origin: '*'}))

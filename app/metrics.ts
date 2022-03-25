@@ -12,7 +12,7 @@ collectDefaultMetrics({
 export const requestCounter = new Counter({
   name: metricsPrefix + 'request_count',
   help: 'Request count',
-  labelNames: ['phase', 'status'] as const,
+  labelNames: ['url', 'phase', 'status'] as const,
 })
 
 export const tidbQueryCounter = new Counter({
@@ -32,7 +32,8 @@ export const cacheHitCounter = new Counter({
 
 export const ghQueryCounter = new Counter({
   name: metricsPrefix + 'gh_api_query_count',
-  help: 'GitHub api query count'
+  help: 'GitHub api query count',
+  labelNames: ['api', 'phase'] as const
 })
 
 export const ghQueryFailedCounter = new Counter({
@@ -43,6 +44,7 @@ export const ghQueryFailedCounter = new Counter({
 export const requestProcessTimer = new Histogram({
   name: metricsPrefix + 'request_process_time',
   help: 'Request process time',
+  labelNames: ['url'] as const
 })
 
 export const waitTidbConnectionTimer = new Histogram({
@@ -57,10 +59,12 @@ export const tidbQueryTimer = new Histogram({
 
 export const ghQueryTimer = new Histogram({
   name: metricsPrefix + 'gh_api_query_time',
-  help: 'GitHub api query timer'
+  help: 'GitHub api query timer',
+  labelNames: ['api']
 })
 
 export const redisQueryTimer = new Histogram({
   name: metricsPrefix + 'redis_query_time',
-  help: 'Redis query time'
+  help: 'Redis query time',
+  labelNames: ['op'] as const
 })
