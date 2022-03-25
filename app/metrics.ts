@@ -36,11 +36,6 @@ export const ghQueryCounter = new Counter({
   labelNames: ['api', 'phase'] as const
 })
 
-export const ghQueryFailedCounter = new Counter({
-  name: metricsPrefix + 'gh_api_query_failed_count',
-  help: 'GitHub api query failed count'
-})
-
 export const requestProcessTimer = new Histogram({
   name: metricsPrefix + 'request_process_time',
   help: 'Request process time',
