@@ -6,7 +6,7 @@ import type {ContextExtends} from "../index";
 import GhExecutor from "./core/GhExecutor";
 import {createClient} from "redis";
 import path from "path";
-import {register} from "./metrics";
+import {register} from "prom-client";
 
 const COMPARE_QUERIES = [
   'stars-total',

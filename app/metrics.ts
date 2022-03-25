@@ -1,10 +1,8 @@
-import {collectDefaultMetrics, Registry, Counter, Histogram} from 'prom-client'
+import {collectDefaultMetrics, Counter, Histogram} from 'prom-client'
 
-export const register = new Registry();
 export const metricsPrefix = 'ossinsight_api_';
 
 collectDefaultMetrics({
-  register,
   prefix: metricsPrefix,
   labels: process.env.NODE_APP_INSTANCE ? {
     NODE_APP_INSTANCE: process.env.NODE_APP_INSTANCE
