@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import consola, {Consola} from 'consola';
 import cors from '@koa/cors';
 import { validateProcessEnv } from './app/env';
+import {requestCounter} from "./app/metrics";
 
 const RateLimit = require('koa2-ratelimit').RateLimit;
 const Stores = require('koa2-ratelimit').Stores;
@@ -36,6 +37,16 @@ const limiter = RateLimit.middleware({
 app.use(async (ctx, next) => {
   ctx.logger = logger
   await next()
+})
+app.use(async (ctx, next) => {
+  try {
+    requestCounter.labels({ phase: 'start' }).inc()
+    await next()
+    requestCounter.labels({ phase: 'success', status: ctx.status}).inc()
+  } catch (e) {
+    requestCounter.labels({ phase: 'error' }).inc()
+    throw e
+  }
 })
 app.use(cors({origin: '*'}))
 app.use(limiter)
