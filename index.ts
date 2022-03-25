@@ -44,7 +44,11 @@ app.use(async (ctx, next) => {
   try {
     requestCounter.labels({ url, phase: 'start' }).inc()
     await next()
-    requestCounter.labels({ url, phase: 'success', status: ctx.status}).inc()
+    if (ctx.status < 400) {
+      requestCounter.labels({ url, phase: 'success', status: ctx.status}).inc()
+    } else {
+      requestCounter.labels({ url, phase: 'error', status: ctx.status}).inc()
+    }
   } catch (e) {
     requestCounter.labels({ url, phase: 'error' }).inc()
     throw e
