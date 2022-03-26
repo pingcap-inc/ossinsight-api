@@ -63,3 +63,12 @@ export const redisQueryTimer = new Histogram({
   help: 'Redis query time',
   labelNames: ['op'] as const
 })
+
+export async function measure<T> (histogram: Histogram<any> | Histogram.Internal<any>, fn: () => Promise<T>) {
+  const end = histogram.startTimer()
+  try {
+    return await fn()
+  } finally {
+    end()
+  }
+}

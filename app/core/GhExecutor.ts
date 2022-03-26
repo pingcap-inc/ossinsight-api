@@ -4,7 +4,7 @@ import Cache from './Cache'
 import {DateTime} from "luxon";
 import consola, {Consola} from "consola";
 import {RedisClientType, RedisDefaultModules, RedisModules, RedisScripts} from "redis";
-import {ghQueryCounter, ghQueryTimer} from "../metrics";
+import {ghQueryCounter, ghQueryTimer, measure} from "../metrics";
 
 const SYMBOL_TOKEN = Symbol('PERSONAL_TOKEN')
 
@@ -72,13 +72,14 @@ export default class GhExecutor {
     return cache.load(() => {
       return this.octokitPool.use(async (octokit) => {
         octokit.log.info(`get repo ${owner}/${repo}`)
-        const end = ghQueryTimer.startTimer({ api: 'getRepo' })
         ghQueryCounter.labels({ api: 'getRepo', phase: 'start' }).inc()
         try {
-          const {data} = await octokit.rest.repos.get({repo, owner})
-          end()
+          const {data} = await measure(
+            ghQueryTimer.labels({api: 'getRepo'}),
+            () => octokit.rest.repos.get({repo, owner})
+          )
           const {value} = Object.getOwnPropertyDescriptor(octokit, SYMBOL_TOKEN)!
-          ghQueryCounter.labels({ api: 'getRepo', phase: 'success' }).inc()
+          ghQueryCounter.labels({api: 'getRepo', phase: 'success'}).inc()
           return {
             expiresAt: DateTime.now().plus({hours: GET_REPO_CACHE_HOURS}),
             data,
@@ -118,13 +119,14 @@ export default class GhExecutor {
         `
         let formattedData: any[] = []
 
-        const end = ghQueryTimer.startTimer({ api: 'getRepo' })
         ghQueryCounter.labels({ api: 'searchRepos', phase: 'start' }).inc()
 
         try {
-          const data: any = await octokit.graphql(query, variables)
-          end()
-          ghQueryCounter.labels({ api: 'searchRepos', phase: 'success' }).inc()
+          const data: any = await measure(
+            ghQueryTimer.labels({api: 'searchRepos'}),
+            () => octokit.graphql(query, variables)
+          )
+          ghQueryCounter.labels({api: 'searchRepos', phase: 'success'}).inc()
 
           data.search.nodes.forEach((repo: any) => formattedData.push({
             id: repo.databaseId,

@@ -1,7 +1,7 @@
 import {DateTime} from 'luxon'
 import consola from "consola";
 import {RedisClientType, RedisDefaultModules, RedisModules, RedisScripts} from "redis";
-import {cacheHitCounter, redisQueryTimer} from "../metrics";
+import {cacheHitCounter, measure, redisQueryTimer} from "../metrics";
 
 export class NeedPrefetchError extends Error {
   readonly msg: string
@@ -93,35 +93,36 @@ export default class Cache<T> {
     const result = await fallback()
 
     // Write result to cache.
-    const end = redisQueryTimer.startTimer({ op: 'set' })
+
     try {
-      if (this.cachedHours === -1) {
-        await this.redisClient.set(this.key, JSON.stringify(result));
-      } else {
-        await this.redisClient.set(this.key, JSON.stringify(result), {
-          EX: this.cachedHours * 3600,
-        });
-      }
+      await measure(redisQueryTimer.labels({op: 'set'}), async () => {
+        if (this.cachedHours === -1) {
+          await this.redisClient.set(this.key, JSON.stringify(result));
+        } else {
+          await this.redisClient.set(this.key, JSON.stringify(result), {
+            EX: this.cachedHours * 3600,
+          });
+        }
+      })
     } catch (err) {
       logger.error('Failed to write cache for key %s.', this.key, err)
-    } finally {
-      end()
     }
 
     return result;
   }
 
   private async fetchDataFromCache():Promise<CachedData<T> | null> {
-    const end = redisQueryTimer.startTimer({ op: 'get' })
     try {
-      const json = await this.redisClient.get(this.key);
+      const json = await measure(
+        redisQueryTimer.labels({op: 'get'}),
+        () => this.redisClient.get(this.key)
+      )
       if (typeof json === 'string') {
         return JSON.parse(json);
       }
     } catch (err) {
       logger.error('Cache <%s> data is broken.', this.key, err);
     }
-    end()
     return null;
   }
 
