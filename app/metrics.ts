@@ -1,6 +1,6 @@
 import {collectDefaultMetrics, Counter, Histogram} from 'prom-client'
 
-export const metricsPrefix = 'oss_insight_api_';
+export const metricsPrefix = 'ossinsight_api_';
 
 collectDefaultMetrics({
   prefix: metricsPrefix,
@@ -17,7 +17,8 @@ export const requestCounter = new Counter({
 
 export const tidbQueryCounter = new Counter({
   name: metricsPrefix + 'tidb_query_count',
-  help: 'TiDB query count'
+  help: 'TiDB query count',
+  labelNames: ['query', 'phase'] as const,
 })
 
 export const cacheHitCounter = new Counter({

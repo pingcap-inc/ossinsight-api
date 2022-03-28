@@ -7,7 +7,7 @@ import Cache, {CachedData} from "./Cache";
 import {RedisClientType, RedisDefaultModules, RedisModules, RedisScripts} from "redis";
 import consola from "consola";
 import {PoolConnection} from "mysql2";
-import {dataQueryTimer, tidbQueryCounter} from "../metrics";
+import {dataQueryTimer, measure, tidbQueryCounter} from "../metrics";
 
 const MAX_CACHE_TIME = DateTime.fromISO('2099-12-31T00:00:00')
 
@@ -114,38 +114,37 @@ export default class Query {
     const cache = new Cache<T>(this.redisClient, key, cacheHours, refreshHours, onlyFromCache, refreshCache);
 
     return cache.load(async () => {
-      const end = dataQueryTimer.startTimer();
-      try {
-        const start = DateTime.now()
-        tidbQueryCounter.labels({ query: this.name, phase: 'start' }).inc()
+      return await measure(dataQueryTimer, async () => {
+        try {
+          const start = DateTime.now()
+          tidbQueryCounter.labels({ query: this.name, phase: 'start' }).inc()
 
-        let data;
-        if (conn) {
-          data = await this.executor.executeWithConn(sql, conn)
-        } else {
-          data = await this.executor.execute(sql)
-        }
+          let data;
+          if (conn) {
+            data = await this.executor.executeWithConn(sql, conn)
+          } else {
+            data = await this.executor.execute(sql)
+          }
 
-        const end = DateTime.now()
-        tidbQueryCounter.labels({ query: this.name, phase: 'success' }).inc()
+          const end = DateTime.now()
+          tidbQueryCounter.labels({ query: this.name, phase: 'success' }).inc()
 
-        return {
-          params: params,
-          requestedAt: start.toISO(),
-          spent: end.diff(start).as('seconds'),
-          sql,
-          expiresAt: cacheHours === -1 ? MAX_CACHE_TIME : end.plus({hours: cacheHours}),
-          data: data as any
+          return {
+            params: params,
+            requestedAt: start.toISO(),
+            spent: end.diff(start).as('seconds'),
+            sql,
+            expiresAt: cacheHours === -1 ? MAX_CACHE_TIME : end.plus({hours: cacheHours}),
+            data: data as any
+          }
+        } catch (e) {
+          tidbQueryCounter.labels({ query: this.name, phase: 'error' }).inc()
+          if (e) {
+            (e as any).sql = sql
+          }
+          throw e
         }
-      } catch (e) {
-        tidbQueryCounter.labels({ query: this.name, phase: 'error' }).inc()
-        if (e) {
-          (e as any).sql = sql
-        }
-        throw e
-      } finally {
-        end()
-      }
+      })
     })
   }
 }
