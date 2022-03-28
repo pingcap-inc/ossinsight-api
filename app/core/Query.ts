@@ -7,6 +7,7 @@ import Cache, {CachedData} from "./Cache";
 import {RedisClientType, RedisDefaultModules, RedisModules, RedisScripts} from "redis";
 import consola from "consola";
 import {PoolConnection} from "mysql2";
+import {dataQueryTimer, tidbQueryCounter, tidbQueryFailedCounter} from "../metrics";
 
 const MAX_CACHE_TIME = DateTime.fromISO('2099-12-31T00:00:00')
 
@@ -113,8 +114,10 @@ export default class Query {
     const cache = new Cache<T>(this.redisClient, key, cacheHours, refreshHours, onlyFromCache, refreshCache);
 
     return cache.load(async () => {
+      const end = dataQueryTimer.startTimer();
       try {
         const start = DateTime.now()
+        tidbQueryCounter.inc()
 
         let data;
         if (conn) {
@@ -133,10 +136,13 @@ export default class Query {
           data: data as any
         }
       } catch (e) {
+        tidbQueryFailedCounter.inc()
         if (e) {
           (e as any).sql = sql
         }
         throw e
+      } finally {
+        end()
       }
     })
   }

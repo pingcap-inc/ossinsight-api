@@ -1,6 +1,6 @@
 import {collectDefaultMetrics, Counter, Histogram} from 'prom-client'
 
-export const metricsPrefix = 'ossinsight_api_';
+export const metricsPrefix = 'oss_insight_api_';
 
 collectDefaultMetrics({
   prefix: metricsPrefix,
@@ -45,6 +45,11 @@ export const requestProcessTimer = new Histogram({
 export const waitTidbConnectionTimer = new Histogram({
   name: metricsPrefix + 'wait_tidb_connection_time',
   help: 'Wait tidb connection time',
+})
+
+export const dataQueryTimer = new Histogram({
+  name: metricsPrefix + 'data_query_time',
+  help: 'Data query time',
 })
 
 export const tidbQueryTimer = new Histogram({
