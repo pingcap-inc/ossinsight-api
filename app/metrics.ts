@@ -20,11 +20,6 @@ export const tidbQueryCounter = new Counter({
   help: 'TiDB query count'
 })
 
-export const tidbQueryFailedCounter = new Counter({
-  name: metricsPrefix + 'tidb_query_failed_count',
-  help: 'TiDB query failed count',
-})
-
 export const cacheHitCounter = new Counter({
   name: metricsPrefix + 'cache_hit_count',
   help: 'Cache hit count'
