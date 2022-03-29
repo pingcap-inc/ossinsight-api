@@ -79,6 +79,7 @@ export const limitedRequestCounter = new Counter({
 export const readConfigTimer = new Summary({
   name: metricsPrefix + 'read_config_time',
   help: 'Read config timer',
+  labelNames: ['type'],
   percentiles: [0.999, 0.99, 0.95, 0.80, 0.50],
 })
 
