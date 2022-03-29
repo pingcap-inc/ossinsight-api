@@ -36,39 +36,39 @@ export const requestProcessTimer = new Summary({
   name: metricsPrefix + 'request_process_time',
   help: 'Request process time',
   labelNames: ['url'] as const,
-  percentiles: [0.999, 0.99, 0.95, 0.80],
+  percentiles: [0.999, 0.99, 0.95, 0.80, 0.50],
 })
 
 export const waitTidbConnectionTimer = new Summary({
   name: metricsPrefix + 'wait_tidb_connection_time',
   help: 'Wait tidb connection time',
-  percentiles: [0.999, 0.99, 0.95, 0.80],
+  percentiles: [0.999, 0.99, 0.95, 0.80, 0.50],
 })
 
 export const dataQueryTimer = new Summary({
   name: metricsPrefix + 'data_query_time',
   help: 'Data query time',
-  percentiles: [0.999, 0.99, 0.95, 0.80],
+  percentiles: [0.999, 0.99, 0.95, 0.80, 0.50],
 })
 
 export const tidbQueryTimer = new Summary({
   name: metricsPrefix + 'tidb_query_time',
   help: 'TiDB query time',
-  percentiles: [0.999, 0.99, 0.95, 0.80],
+  percentiles: [0.999, 0.99, 0.95, 0.80, 0.50],
 })
 
 export const ghQueryTimer = new Summary({
   name: metricsPrefix + 'gh_api_query_time',
   help: 'GitHub api query timer',
   labelNames: ['api'],
-  percentiles: [0.999, 0.99, 0.95, 0.80],
+  percentiles: [0.999, 0.99, 0.95, 0.80, 0.50],
 })
 
 export const redisQueryTimer = new Summary({
   name: metricsPrefix + 'redis_query_time',
   help: 'Redis query time',
   labelNames: ['op'] as const,
-  percentiles: [0.999, 0.99, 0.95, 0.80],
+  percentiles: [0.999, 0.99, 0.95, 0.80, 0.50],
 })
 
 export const limitedRequestCounter = new Counter({
