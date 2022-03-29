@@ -76,6 +76,12 @@ export const limitedRequestCounter = new Counter({
   help: 'Limited HTTP request count',
 })
 
+export const readConfigTimer = new Summary({
+  name: metricsPrefix + 'read_config_time',
+  help: 'Read config timer',
+  percentiles: [0.999, 0.99, 0.95, 0.80, 0.50],
+})
+
 export async function measure<T>(metrics: Summary<any> | Summary.Internal<any> | Histogram<any> | Histogram.Internal<any>, fn: () => Promise<T>) {
   const end = metrics.startTimer()
   try {
