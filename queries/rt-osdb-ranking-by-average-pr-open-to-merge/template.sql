@@ -7,7 +7,7 @@ with issue_with_merged_at as (
         join osdb_repos db on ge.repo_id = db.id
     where
         type = 'PullRequestEvent'
-        and action = 'closed' and pr_merged = true
+        and action = 'closed'
 ), issue_with_opened_at as (
     select
         /*+ read_from_storage(tiflash[ge]) */
