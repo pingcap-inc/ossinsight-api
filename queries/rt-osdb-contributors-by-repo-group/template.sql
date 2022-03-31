@@ -6,8 +6,8 @@ with prs as (
         github_events ge
         join osdb_repos db on ge.repo_id = db.id
     where
-        type = 'PullRequestEvent'
-        and action = 'opened'
+            type = 'PullRequestEvent'
+      and action = 'opened'
 )
 select
     repo_group_name,
@@ -17,4 +17,4 @@ from
     prs
 where actor_login not like '%bot%'
 group by 1, 2
-order by 3 desc
+order by 1, 3 desc
