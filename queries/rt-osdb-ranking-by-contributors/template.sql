@@ -1,10 +1,20 @@
-SELECT
-    /*+ read_from_storage(tiflash[github_events]) */
-    db.group_name  AS repo_group_name,
-    COUNT(distinct pr_or_issue_id) AS num
-FROM
-    github_events github_events
-    JOIN osdb_repos db ON db.id = github_events.repo_id
-WHERE type = 'IssuesEvent'
-GROUP BY 1
-ORDER BY 2 DESC
+with prs as (
+    select
+        /*+ read_from_storage(tiflash[ge]) */
+        pr_or_issue_id, db.group_name as repo_group_name, actor_login
+    from
+        github_events ge
+        join osdb_repos db on ge.repo_id = db.id
+    where
+        type = 'PullRequestEvent'
+        and action = 'opened'
+)
+select
+    repo_group_name,
+    actor_login as 'contributor',
+    count(pr_or_issue_id) as 'prs'
+from
+    prs
+where actor_login not like '%bot%'
+group by 1, 2
+order by 3 desc
