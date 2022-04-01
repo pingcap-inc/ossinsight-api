@@ -1,7 +1,7 @@
 import {MysqlQueryExecutor} from "../core/MysqlQueryExecutor";
 
 interface Repo {
-  id: number;
+  id: any;
   name: string;
   group_name: string;
 }
@@ -12,22 +12,29 @@ export default class RepoGroupService {
   }
 
   async getRepoGroups() {
-    const repos = await this.executor.execute('select * from osdb_repos;') as Repo[];
+    const repos = await this.executor.execute('select id, name, group_name from osdb_repos;') as Repo[];
 
-    const repoGroupMap = new Map();
     if (Array.isArray(repos)) {
+      const repoGroupMap = new Map();
       for (const repo of repos) {
         if (repoGroupMap.has(repo.group_name)) {
           const repoGroup = repoGroupMap.get(repo.group_name);
+          repo.id = parseInt(repo.id);
           repoGroup.repos.push(repo);
         } else {
+          repo.id = parseInt(repo.id);
           repoGroupMap.set(repo.group_name, {
             group_name: repo.group_name,
             repos: [repo]
           });
         }
       }
-      return repoGroupMap.values();
+
+      const repoGroups = []
+      for (const repoGroup of repoGroupMap.values()) {
+        repoGroups.push(repoGroup);
+      }
+      return repoGroups;
     } else {
       return [];
     }
