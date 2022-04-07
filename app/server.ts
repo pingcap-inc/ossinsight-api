@@ -86,7 +86,6 @@ export default async function server(router: Router<DefaultState, ContextExtends
 
       ctx.response.status = 200
       if (ctx.query.format === 'global_variable') {
-        const callbackName = ctx.query.callback || 'callback'
         ctx.type = 'text/javascript'
         ctx.response.body = `var osdbgroup = (${JSON.stringify(res)});`
       } else {
