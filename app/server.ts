@@ -85,10 +85,10 @@ export default async function server(router: Router<DefaultState, ContextExtends
       const res = await repoGroupService.getRepoGroups();
 
       ctx.response.status = 200
-      if (ctx.query.format === 'jsonp') {
+      if (ctx.query.format === 'global_variable') {
         const callbackName = ctx.query.callback || 'callback'
         ctx.type = 'text/javascript'
-        ctx.response.body = `;${callbackName}(${JSON.stringify(res)})`
+        ctx.response.body = `var osdbgroup = (${JSON.stringify(res)});`
       } else {
         ctx.response.body = res
       }
