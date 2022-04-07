@@ -85,9 +85,13 @@ export default async function server(router: Router<DefaultState, ContextExtends
       const res = await repoGroupService.getRepoGroups();
 
       ctx.response.status = 200
-      ctx.response.body = res
+      if (ctx.query.format === 'jsonp') {
+        const callbackName = ctx.query.callback || 'callback'
+        ctx.response.body = `;${callbackName}(${JSON.stringify(res)})`
+      } else {
+        ctx.response.body = res
+      }
     } catch (e: any) {
-
       ctx.logger.error('request failed %s', ctx.request.originalUrl, e)
       ctx.response.status = e?.response?.status ?? e?.status ?? 500
       ctx.response.body = e?.response?.data ?? e?.message ?? String(e)
