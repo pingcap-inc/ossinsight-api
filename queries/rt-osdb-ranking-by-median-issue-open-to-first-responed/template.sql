@@ -6,14 +6,14 @@ with issue_with_first_responed_at as (
         github_events ge
         join osdb_repos db on ge.repo_id = db.id
     where
-        type = 'IssueCommentEvent'
-        and action = 'created'
+        ((type = 'IssueCommentEvent' and action = 'created') or (type = 'IssuesEvent' and action = 'closed'))
         and actor_login not like '%bot%'
+        and actor_login != 'elasticmachine'
     group by 1
 ), issue_with_opened_at as (
     select
         /*+ read_from_storage(tiflash[ge]) */
-        db.group_name as repo_group_name, pr_or_issue_id, created_at as opened_at
+        pr_or_issue_id, db.group_name as repo_group_name, created_at as opened_at
     from
         github_events ge
         join osdb_repos db on ge.repo_id = db.id
