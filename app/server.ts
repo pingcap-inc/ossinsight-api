@@ -87,6 +87,7 @@ export default async function server(router: Router<DefaultState, ContextExtends
       ctx.response.status = 200
       if (ctx.query.format === 'jsonp') {
         const callbackName = ctx.query.callback || 'callback'
+        ctx.type = 'text/javascript'
         ctx.response.body = `;${callbackName}(${JSON.stringify(res)})`
       } else {
         ctx.response.body = res
