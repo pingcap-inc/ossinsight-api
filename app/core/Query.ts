@@ -1,6 +1,6 @@
 import {readFile} from 'fs/promises'
 import path from 'path'
-import {DateTime} from "luxon";
+import {DateTime, Duration} from "luxon";
 import type { QuerySchema } from '../../params.schema'
 import {MysqlQueryExecutor} from "./MysqlQueryExecutor";
 import Cache, {CachedData} from "./Cache";
@@ -10,6 +10,18 @@ import {PoolConnection} from "mysql2";
 import {dataQueryTimer, measure, readConfigTimer, tidbQueryCounter} from "../metrics";
 
 const MAX_CACHE_TIME = DateTime.fromISO('2099-12-31T00:00:00')
+
+export enum ParamType {
+  ARRAY = 'array',
+  DATE_RANGE = 'date-range'
+}
+
+export enum ParamDateRange {
+  LAST_HOUR = 'last_hour',
+  LAST_DAY = 'last_day',
+  LAST_WEEK = 'last_week',
+  LAST_MONTH = 'last_month',
+}
 
 export class BadParamsError extends Error {
   readonly msg: string
@@ -36,48 +48,63 @@ export class QueryTemplateNotFoundError extends Error {
 }
 
 export function buildParams(template: string, querySchema: QuerySchema, values: Record<string, any>) {
-  for (let {name, replaces, template: paramTemplate, default: defaultValue, isArray, pattern} of querySchema.params) {
+  for (let {name, replaces, template: paramTemplate, default: defaultValue, type, column, pattern} of querySchema.params) {
     const value = values[name] ?? defaultValue
 
-    if (isArray) {
-      const arrValues = [];
+    let targetValue = "";
+    switch (type) {
+      case ParamType.ARRAY:
+        const arrValues = [];
 
-      if (Array.isArray(value)) {
-        for (let v of value) {
-          const targetValue = verifyParam(name, v, pattern, paramTemplate);
-          arrValues.push(targetValue)
+        if (Array.isArray(value)) {
+          for (let v of value) {
+            const targetValue = verifyParam(name, v, pattern, paramTemplate);
+            arrValues.push(targetValue);
+          }
+        } else {
+          const targetValue = verifyParam(name, value, pattern, paramTemplate);
+          arrValues.push(targetValue);
         }
-      } else {
-        const targetValue = verifyParam(name, value, pattern, paramTemplate);
-        arrValues.push(targetValue)
-      }
 
-      template = template.replaceAll(replaces, arrValues.join(', '))
+        targetValue = arrValues.join(', ');
+        break;
+      case ParamType.DATE_RANGE:
+        const verifiedValue = verifyParam(name, value, pattern, paramTemplate);
+        const to = DateTime.now()
+        let from = to;
+        if (verifiedValue === ParamDateRange.LAST_HOUR) {
+          from = to.minus(Duration.fromObject({ 'hours': 1 }))
+        } else if (verifiedValue === ParamDateRange.LAST_DAY) {
+          from = to.minus(Duration.fromObject({ 'days': 1 }))
+        } else if (verifiedValue === ParamDateRange.LAST_WEEK) {
+          from = to.minus(Duration.fromObject({ 'weeks': 1 }))
+        } else if (verifiedValue === ParamDateRange.LAST_MONTH) {
+          from = to.minus(Duration.fromObject({ 'months': 1 }))
+        }
 
-    } else if (typeof value === "number" || typeof value === "string") {
-      const targetValue = verifyParam(name, value, pattern, paramTemplate);
-      template = template.replaceAll(replaces, targetValue)
-    } else {
-      throw new BadParamsError(name, 'require param ' + name)
+        targetValue = `${column} >= '${from.toSQL()}' AND ${column} <= '${to.toSQL()}'`
+        break;
+      default:
+        targetValue = verifyParam(name, value, pattern, paramTemplate);
     }
+    template = template.replaceAll(replaces, targetValue);
   }
   return template
 }
 
 function verifyParam(name: string, value: any, pattern?: string, paramTemplate?: Record<string, string>) {
-  const strValue = String(value);
-
-  if (typeof pattern !== "undefined") {
+  if (pattern) {
     const regexp = new RegExp(pattern);
-    if (!regexp.test(strValue)) {
+    if (!regexp.test(String(value))) {
       throw new BadParamsError(name, 'bad param ' + name)
     }
   }
 
-  const targetValue = paramTemplate ? paramTemplate[strValue] : strValue;
-  if (typeof targetValue === "undefined") {
-    throw new BadParamsError(name, 'bad param ' + name)
+  const targetValue = paramTemplate ? paramTemplate[String(value)] : value;
+  if (targetValue === undefined || targetValue === null) {
+    throw new BadParamsError(name, 'require param ' + name)
   }
+
   return targetValue;
 }
 
