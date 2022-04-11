@@ -35,7 +35,7 @@ export interface Params {
   /**
    * Define the parameter type.
    */
-  type?: "array" | "string" | "number" | "date-range" | "date";
+  type?: "array" | "date-range";
   /**
    * Define the parameter corresponding column name.
    */
