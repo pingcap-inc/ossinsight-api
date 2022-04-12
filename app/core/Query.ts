@@ -54,35 +54,10 @@ export function buildParams(template: string, querySchema: QuerySchema, values: 
     let targetValue = "";
     switch (type) {
       case ParamType.ARRAY:
-        const arrValues = [];
-
-        if (Array.isArray(value)) {
-          for (let v of value) {
-            const targetValue = verifyParam(name, v, pattern, paramTemplate);
-            arrValues.push(targetValue);
-          }
-        } else {
-          const targetValue = verifyParam(name, value, pattern, paramTemplate);
-          arrValues.push(targetValue);
-        }
-
-        targetValue = arrValues.join(', ');
+        targetValue = handleArrayValue(name, value, column, pattern, paramTemplate)
         break;
       case ParamType.DATE_RANGE:
-        const verifiedValue = verifyParam(name, value, pattern, paramTemplate);
-        const to = DateTime.now()
-        let from = to;
-        if (verifiedValue === ParamDateRange.LAST_HOUR) {
-          from = to.minus(Duration.fromObject({ 'hours': 1 }))
-        } else if (verifiedValue === ParamDateRange.LAST_DAY) {
-          from = to.minus(Duration.fromObject({ 'days': 1 }))
-        } else if (verifiedValue === ParamDateRange.LAST_WEEK) {
-          from = to.minus(Duration.fromObject({ 'weeks': 1 }))
-        } else if (verifiedValue === ParamDateRange.LAST_MONTH) {
-          from = to.minus(Duration.fromObject({ 'months': 1 }))
-        }
-
-        targetValue = `${column} >= '${from.toSQL()}' AND ${column} <= '${to.toSQL()}'`
+        targetValue = handleDateRangeValue(name, value, column, pattern, paramTemplate)
         break;
       default:
         targetValue = verifyParam(name, value, pattern, paramTemplate);
@@ -90,6 +65,40 @@ export function buildParams(template: string, querySchema: QuerySchema, values: 
     template = template.replaceAll(replaces, targetValue);
   }
   return template
+}
+
+function handleArrayValue(name: string, value: any, column?: string, pattern?: string, paramTemplate?: Record<string, string>) {
+  const arrValues = [];
+
+  if (Array.isArray(value)) {
+    for (let v of value) {
+      const targetValue = verifyParam(name, v, pattern, paramTemplate);
+      arrValues.push(targetValue);
+    }
+  } else {
+    const targetValue = verifyParam(name, value, pattern, paramTemplate);
+    arrValues.push(targetValue);
+  }
+
+  return arrValues.join(', ');
+}
+
+function handleDateRangeValue(name: string, value: any, column?: string, pattern?: string, paramTemplate?: Record<string, string>) {
+  const verifiedValue = verifyParam(name, value, pattern, paramTemplate);
+  const to = DateTime.now()
+  let from = to;
+
+  if (verifiedValue === ParamDateRange.LAST_HOUR) {
+    from = to.minus(Duration.fromObject({ 'hours': 1 }))
+  } else if (verifiedValue === ParamDateRange.LAST_DAY) {
+    from = to.minus(Duration.fromObject({ 'days': 1 }))
+  } else if (verifiedValue === ParamDateRange.LAST_WEEK) {
+    from = to.minus(Duration.fromObject({ 'weeks': 1 }))
+  } else if (verifiedValue === ParamDateRange.LAST_MONTH) {
+    from = to.minus(Duration.fromObject({ 'months': 1 }))
+  }
+
+  return `${column} >= '${from.toSQL()}' AND ${column} <= '${to.toSQL()}'`
 }
 
 function verifyParam(name: string, value: any, pattern?: string, paramTemplate?: Record<string, string>) {
