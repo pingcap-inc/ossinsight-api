@@ -41,6 +41,10 @@ export interface Params {
    */
   column?: string;
   /**
+   * Set in date-range should use that moment as `to` time.
+   */
+  dateRangeTo?: "now" | "last-valid-datetime";
+  /**
    * Define substring in the query sql template. Replacing uses `String.replaceAll`, please make sure the replacing substring is not substring of other texts.
    */
   replaces: string;

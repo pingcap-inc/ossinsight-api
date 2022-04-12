@@ -52,6 +52,12 @@
           "description": "Define the parameter corresponding column name.",
           "type": "string"
         },
+        "dateRangeTo": {
+          "description": "Set in date-range should use that moment as `to` time.",
+          "type": "string",
+          "enum": ["now", "last-valid-datetime"],
+          "default": "last-valid-datetime"
+        },
         "replaces": {
           "description": "Define substring in the query sql template. Replacing uses `String.replaceAll`, please make sure the replacing substring is not substring of other texts.",
           "type": "string"

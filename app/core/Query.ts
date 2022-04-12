@@ -8,6 +8,7 @@ import {RedisClientType, RedisDefaultModules, RedisModules, RedisScripts} from "
 import consola from "consola";
 import {PoolConnection} from "mysql2";
 import {dataQueryTimer, measure, readConfigTimer, tidbQueryCounter} from "../metrics";
+import GHEventService from "../services/GHEventService";
 
 const MAX_CACHE_TIME = DateTime.fromISO('2099-12-31T00:00:00')
 
@@ -21,6 +22,11 @@ export enum ParamDateRange {
   LAST_DAY = 'last_day',
   LAST_WEEK = 'last_week',
   LAST_MONTH = 'last_month',
+}
+
+export enum ParamDateRangeTo {
+  NOW = 'now',
+  LAST_VALID_DATETIME = 'last_valid_datetime',
 }
 
 export class BadParamsError extends Error {
@@ -47,9 +53,10 @@ export class QueryTemplateNotFoundError extends Error {
   }
 }
 
-export function buildParams(template: string, querySchema: QuerySchema, values: Record<string, any>) {
-  for (let {name, replaces, template: paramTemplate, default: defaultValue, type, column, pattern} of querySchema.params) {
-    const value = values[name] ?? defaultValue
+export async function buildParams(template: string, querySchema: QuerySchema, values: Record<string, any>, ghEventService: GHEventService) {
+  for (const param of querySchema.params) {
+    const { name, replaces, template: paramTemplate, default: defaultValue, dateRangeTo, type, column, pattern } = param;
+    const value = values[name] ?? defaultValue;
 
     let targetValue = "";
     switch (type) {
@@ -57,7 +64,7 @@ export function buildParams(template: string, querySchema: QuerySchema, values: 
         targetValue = handleArrayValue(name, value, column, pattern, paramTemplate)
         break;
       case ParamType.DATE_RANGE:
-        targetValue = handleDateRangeValue(name, value, column, pattern, paramTemplate)
+        targetValue = await handleDateRangeValue(name, value, ghEventService, dateRangeTo, column, pattern, paramTemplate)
         break;
       default:
         targetValue = verifyParam(name, value, pattern, paramTemplate);
@@ -83,11 +90,18 @@ function handleArrayValue(name: string, value: any, column?: string, pattern?: s
   return arrValues.join(', ');
 }
 
-function handleDateRangeValue(name: string, value: any, column?: string, pattern?: string, paramTemplate?: Record<string, string>) {
+async function handleDateRangeValue(
+  name: string, value: any, ghEventService: GHEventService, dateRangeTo?: string, column?: string,
+  pattern?: string, paramTemplate?: Record<string, string>
+) {
   const verifiedValue = verifyParam(name, value, pattern, paramTemplate);
-  const to = DateTime.now()
-  let from = to;
 
+  let to = DateTime.now();
+  if (dateRangeTo === ParamDateRangeTo.LAST_VALID_DATETIME) {
+    to = DateTime.fromFormat(await ghEventService.getMaxEventTime(), "yyyy-MM-dd HH:mm:ss");
+  }
+
+  let from = to;
   if (verifiedValue === ParamDateRange.LAST_HOUR) {
     from = to.minus(Duration.fromObject({ 'hours': 1 }))
   } else if (verifiedValue === ParamDateRange.LAST_DAY) {
@@ -134,6 +148,7 @@ export default class Query {
     public readonly name: string,
     public readonly redisClient: RedisClientType<RedisDefaultModules & RedisModules, RedisScripts>,
     public readonly executor: MysqlQueryExecutor<unknown>,
+    public readonly ghEventService: GHEventService
   ) {
     this.path = path.join(process.cwd(), 'queries', name)
     const templateFilePath = path.join(this.path, 'template.sql')
@@ -161,7 +176,7 @@ export default class Query {
 
   async buildSql(params: Record<string, any>): Promise<string> {
     await this.ready()
-    return buildParams(this.template!, this.queryDef!, params)
+    return await buildParams(this.template!, this.queryDef!, params, this.ghEventService)
   }
 
   async run <T> (params: Record<string, any>, refreshCache: boolean = false, conn?: PoolConnection): Promise<CachedData<T>> {
