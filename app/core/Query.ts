@@ -55,7 +55,10 @@ export class QueryTemplateNotFoundError extends Error {
 
 export async function buildParams(template: string, querySchema: QuerySchema, values: Record<string, any>, ghEventService: GHEventService) {
   for (const param of querySchema.params) {
-    const { name, replaces, template: paramTemplate, default: defaultValue, dateRangeTo, type, column, pattern } = param;
+    const {
+      name, replaces, template: paramTemplate, dateRangeTo = ParamDateRangeTo.LAST_VALID_DATETIME,
+      default: defaultValue, type, column, pattern
+    } = param;
     const value = values[name] ?? defaultValue;
 
     let targetValue = "";
