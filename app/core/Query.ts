@@ -179,7 +179,7 @@ export default class Query {
 
   async buildSql(params: Record<string, any>): Promise<string> {
     await this.ready()
-    return await buildParams(this.template!, this.queryDef!, params, this.ghEventService)
+    return buildParams(this.template!, this.queryDef!, params, this.ghEventService)
   }
 
   async run <T> (params: Record<string, any>, refreshCache: boolean = false, conn?: PoolConnection): Promise<CachedData<T>> {
