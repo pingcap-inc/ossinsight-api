@@ -188,9 +188,9 @@ export default class Query {
     const cache = new Cache<T>(this.redisClient, key, cacheHours, refreshHours, onlyFromCache, refreshCache);
 
     return cache.load(async () => {
-      const sql = await this.buildSql(params);
-
       return await measure(dataQueryTimer, async () => {
+        const sql = await this.buildSql(params);
+
         try {
           const start = DateTime.now()
           tidbQueryCounter.labels({ query: this.name, phase: 'start' }).inc()
