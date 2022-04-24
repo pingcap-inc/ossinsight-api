@@ -136,20 +136,21 @@ export default class GhExecutor {
     const key = `gh:search_repos:${keyword}`;
     const cache = new Cache(this.redisClient, key, SEARCH_REPOS_CACHE_HOURS, -1)
     return cache.load(() => {
-      if (keyword === RECOMMEND_REPO_LIST_1_KEYWORD) {
-        return Promise.resolve({
-          expiresAt: DateTime.now().plus({hours: SEARCH_REPOS_CACHE_HOURS}),
-          data: RECOMMEND_REPO_LIST_1
-        })
-      } else if (keyword === RECOMMEND_REPO_LIST_2_KEYWORD) {
-        return Promise.resolve({
-          expiresAt: DateTime.now().plus({hours: SEARCH_REPOS_CACHE_HOURS}),
-          data: RECOMMEND_REPO_LIST_2
-        })
-      }
-
       return this.octokitPool.use(async (octokit) => {
         octokit.log.info(`search repos by keyword ${keyword}`)
+
+        // Recommend list.
+        if (keyword === RECOMMEND_REPO_LIST_1_KEYWORD) {
+          return Promise.resolve({
+            expiresAt: DateTime.now().plus({hours: SEARCH_REPOS_CACHE_HOURS}),
+            data: RECOMMEND_REPO_LIST_1
+          })
+        } else if (keyword === RECOMMEND_REPO_LIST_2_KEYWORD) {
+          return Promise.resolve({
+            expiresAt: DateTime.now().plus({hours: SEARCH_REPOS_CACHE_HOURS}),
+            data: RECOMMEND_REPO_LIST_2
+          })
+        }
 
         const variables = {
           q: keyword,
