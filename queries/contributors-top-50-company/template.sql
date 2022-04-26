@@ -2,7 +2,7 @@ select *
 from (
     select
         trim(replace(replace(replace(replace(replace(replace(replace(replace(u.company, ',', ''), '-', ''), '@', ''), '.', ''), 'ltd', ''), 'inc', ''), 'com', ''), 'www', '')) as company_name,
-        count(distinct actor_id) as stargazers
+        count(distinct actor_id) as contributors
     from github_events
     use index(index_github_events_on_repo_id)
     left join users u ON github_events.actor_login = u.login
@@ -10,5 +10,5 @@ from (
     group by 1
  ) sub
 where length(company_name) != 0 and company_name not in ('-', '--- click here ---', 'none', 'no', 'home', 'n/a')
-order by stargazers desc
+order by contributors desc
 limit 50;
