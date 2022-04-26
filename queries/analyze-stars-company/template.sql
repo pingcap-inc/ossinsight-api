@@ -13,9 +13,9 @@ select
     stargazers / (
         select count(*)
         from star_companies
-        where length(company_name) != 0 and company_name not in ('-', 'none', 'no', 'home', 'n/a', 'null')
+        where length(company_name) != 0 and company_name not in ('-', 'none', 'no', 'home', 'n/a', 'null', 'unknown')
     ) as proportion
 from star_companies sub
-where length(company_name) != 0 and company_name not in ('-', 'none', 'no', 'home', 'n/a', 'null')
+where length(company_name) != 0 and company_name not in ('-', 'none', 'no', 'home', 'n/a', 'null', 'unknown')
 order by stargazers desc
 limit 50;

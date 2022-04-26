@@ -9,6 +9,6 @@ from (
      where repo_id in (41986369) and github_events.type = 'IssuesEvent' and action = 'opened'
      group by 1
 ) sub
-where length(company_name) != 0 and company_name not in ('-', 'none', 'no', 'home', 'n/a', 'null')
+where length(company_name) != 0 and company_name not in ('-', 'none', 'no', 'home', 'n/a', 'null', 'unknown')
 order by issue_creators desc
 limit 50;

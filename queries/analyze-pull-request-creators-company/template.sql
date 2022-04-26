@@ -13,9 +13,9 @@ select
     code_contributors / (
         select count(*)
         from pr_creator_companies
-        where length(company_name) != 0 and company_name not in ('-', 'none', 'no', 'home', 'n/a', 'null')
+        where length(company_name) != 0 and company_name not in ('-', 'none', 'no', 'home', 'n/a', 'null', 'unknown')
     ) as proportion
 from pr_creator_companies sub
-where length(company_name) != 0 and company_name not in ('-', 'none', 'no', 'home', 'n/a', 'null')
+where length(company_name) != 0 and company_name not in ('-', 'none', 'no', 'home', 'n/a', 'null', 'unknown')
 order by code_contributors desc
 limit 50;

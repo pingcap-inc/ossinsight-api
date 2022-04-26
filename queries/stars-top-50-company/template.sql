@@ -9,6 +9,6 @@ from (
     where repo_id in (41986369) and github_events.type = 'WatchEvent'
     group by 1
  ) sub
-where length(company_name) != 0 and company_name not in ('-', '--- click here ---', 'none', 'no', 'home', 'n/a')
+where length(company_name) != 0 and company_name not in ('-', '--- click here ---', 'none', 'no', 'home', 'n/a', 'unknown')
 order by stargazers desc
 limit 50;
