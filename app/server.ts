@@ -5,7 +5,6 @@ import {DefaultState} from "koa";
 import type {ContextExtends} from "../index";
 import GhExecutor from "./core/GhExecutor";
 import {createClient} from "redis";
-import path from "path";
 import {register} from "prom-client";
 import {measureRequests} from "./middlewares/measureRequests";
 import RepoGroupService from "./services/RepoGroupService";

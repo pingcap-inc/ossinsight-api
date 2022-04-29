@@ -1,4 +1,4 @@
-import App from 'koa'
+import App, { Context } from 'koa'
 import Router from 'koa-router';
 import server from "./app/server";
 import dotenv from 'dotenv';
@@ -22,8 +22,18 @@ export interface ContextExtends extends App.DefaultContext {
   logger: Consola
 }
 
-const app = new App<App.DefaultState, ContextExtends>()
+const app = new App<App.DefaultState, ContextExtends>({
+  proxy: true
+})
 const router = new Router<App.DefaultState, ContextExtends>()
+
+// Logs.
+app.use(async (ctx, next) => {
+  ctx.logger = logger
+  await next()
+})
+
+// Rate Limit.
 const rateLimitInterval = parseInt(process.env.RATE_LIMIT_INTERVAL || '1');
 const rateLimitMaxRequests = parseInt(process.env.RATE_LIMIT_MAX_REQUEST || '60');
 const limiter = RateLimit.middleware({
@@ -31,22 +41,20 @@ const limiter = RateLimit.middleware({
   max: rateLimitMaxRequests,               // limit max requests per interval for each IP.
   store: new Stores.Redis({
     url: process.env.REDIS_URL
-  })
+  }),
+  keyGenerator: async function(ctx:Context) {
+    console.log(ctx.request.ip);
+    
+    return `global:${ctx.request.ip}`;
+  }
 });
-
-app.use(async (ctx, next) => {
-  ctx.logger = logger
-  await next()
-})
 app.use(measureLimitedRequests)
 app.use(cors({origin: '*'}))
 app.use(limiter)
 
 server(router)
-
 app.use(router.routes())
   .use(router.allowedMethods())
-
 
 const port = parseInt(process.env.SERVER_PORT || '3450')
 app.listen(port, () => {
