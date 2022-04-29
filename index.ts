@@ -43,9 +43,11 @@ const limiter = RateLimit.middleware({
     url: process.env.REDIS_URL
   }),
   keyGenerator: async function(ctx:Context) {
+    console.log(ctx.request.host);
     console.log(ctx.request.ip);
+    console.log(JSON.stringify(ctx.request.headers));
     
-    return `global:${ctx.request.ip}`;
+    return `rate-limit:global:${ctx.request.ip}`;
   }
 });
 app.use(measureLimitedRequests)
