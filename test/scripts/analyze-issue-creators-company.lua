@@ -14,13 +14,11 @@ function setup(thread)
     end
 end
 
-repos = {
-    "db_repos",
-    "js_framework_repos",
-    "nocode_repos",
-    "programming_language_repos",
-    "web_framework_repos"
-}
+repos = {}
+for line in io.lines("test/testdata/most-stars-repo-in-2021.csv") do
+    local repoId = line:match("%s*(.+)")
+    repos[#repos + 1] = repoId
+end
 
 wrk.method = "GET"
 wrk.scheme = "https"
@@ -29,7 +27,7 @@ request = function()
     range = math.ceil(#repos / thread_count)
     offset = (id - 1) * range
     current = repos[(offset + counter) % #repos + 1]
-    path = "https://api.ossinsight.io/q/archive-2021-top10-by-prs?repo=" .. current
+    path = "https://api.ossinsight.io/q/analyze-issue-creators-company?repoId=" .. current
     counter = counter + 1
     return wrk.format(nil, path)
 end
