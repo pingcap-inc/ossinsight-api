@@ -12,7 +12,6 @@ const RECOMMEND_REPO_LIST_1_KEYWORD = 'recommend-repo-list-1-keyword'
 const RECOMMEND_REPO_LIST_1: any[] = [
   { id: 41986369, fullName: 'pingcap/tidb' },
   { id: 10270250, fullName: 'facebook/react' },
-  { id: 6296790, fullName: 'spring-projects/spring-boot' },
   { id: 41881900, fullName: 'microsoft/vscode' },
   { id: 45717250, fullName: 'tensorflow/tensorflow' },
   { id: 1863329, fullName: 'laravel/laravel' },
@@ -28,7 +27,6 @@ const RECOMMEND_REPO_LIST_2: any[] = [
   { id: 27193779, fullName: 'nodejs/node' },
   { id: 65600975, fullName: 'pytorch/pytorch' },
   { id: 8514, fullName: 'rails/rails' },
-  { id: 206213815, fullName: 'chaos-mesh/chaos-mesh' },
   { id: 16563587, fullName: 'cockroachdb/cockroach' },
 ]
 
