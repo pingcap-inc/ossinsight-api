@@ -9,7 +9,7 @@
     },
     {
       "name": "limit",
-      "replaces": "50",
+      "replaces": "9999999999",
       "pattern": "^(10|20|25|50)$",
       "default": 50
     }

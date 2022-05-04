@@ -11,4 +11,4 @@ from (
  ) sub
 where length(company_name) != 0 and company_name not in ('-', '--- click here ---', 'none', 'no', 'home', 'n/a', 'unknown', 'null')
 order by stargazers desc
-limit 50;
+limit 9999999999;
