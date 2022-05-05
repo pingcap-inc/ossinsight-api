@@ -71,7 +71,7 @@ export default async function server(router: Router<DefaultState, ContextExtends
 
   // Init Services.
   const repoGroupService = new RepoGroupService(executor);
-  const ghEventService = new GHEventService(executor);
+  const ghEventService = new GHEventService(executor, redisClient);
 
   router.get('/q/:query', measureRequests({ urlLabel: 'path' }), async ctx => {
     try {
@@ -175,6 +175,37 @@ export default async function server(router: Router<DefaultState, ContextExtends
       }
 
       const res = await ghExecutor.searchRepos(keyword)
+
+      ctx.response.status = 200
+      ctx.response.body = res
+    } catch (e: any) {
+
+      ctx.logger.error('request failed %s', ctx.request.originalUrl, e)
+      ctx.response.status = e?.response?.status ?? e?.status ?? 500
+      ctx.response.body = e?.response?.data ?? e?.message ?? String(e)
+    }
+  })
+
+  router.get('/v2/gh/repos/search', searchRepoRateLimiter, measureRequests({ urlLabel: 'path' }), async ctx => {
+    let { keyword } = ctx.query;
+
+    try {
+      if (keyword == undefined || keyword.length === 0) {
+        ctx.response.status = 400;
+        ctx.response.body = "keyword can not be empty.";
+        return
+      }
+
+      // Only consider the first keyword query parameter.
+      keyword = Array.isArray(keyword) ? keyword[0] : keyword;
+
+      // Try to use GitHub API for repository searching.
+      let res = await ghExecutor.searchRepos(keyword);
+
+      // Fail back to use database for searching.
+      if (!Array.isArray(res?.data) || res?.data.length === 0) {
+        res = await ghEventService.searchReposByKeyword(keyword);
+      }
 
       ctx.response.status = 200
       ctx.response.body = res

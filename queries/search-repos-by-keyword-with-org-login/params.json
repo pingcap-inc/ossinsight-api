@@ -1,0 +1,16 @@
+{
+  "cacheHours": -1,
+  "refreshHours": 1,
+  "params": [
+    {
+      "name": "orgLogin",
+      "replaces": "orgLogin",
+      "type": "string"
+    },
+    {
+      "name": "repoName",
+      "replaces": "repoName",
+      "type": "string"
+    }
+  ]
+}

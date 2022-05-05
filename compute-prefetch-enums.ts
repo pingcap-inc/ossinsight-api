@@ -45,7 +45,7 @@ async function getPresets(): Promise<Record<string, string[]>> {
   return JSON.parse(await fsp.readFile(path.join(process.cwd(), 'params-preset.json'), { encoding: "utf-8" }))
 }
 
-async function main () {
+async function main() {
   // Init logger.
   const today = new Date();
   let logFilename = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}.log`
@@ -90,7 +90,7 @@ async function main () {
     decimalNumbers: true
   });
 
-  const ghEventService = new GHEventService(queryExecutor);
+  const ghEventService = new GHEventService(queryExecutor, redisClient);
 
   logger.info("Ready Go...")
   for (let i = 0; i < Number.MAX_VALUE; i++) {

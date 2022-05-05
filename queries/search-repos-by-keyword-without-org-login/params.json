@@ -1,0 +1,11 @@
+{
+  "cacheHours": -1,
+  "refreshHours": 1,
+  "params": [
+    {
+      "name": "fullName",
+      "replaces": "fullName",
+      "type": "string"
+    }
+  ]
+}

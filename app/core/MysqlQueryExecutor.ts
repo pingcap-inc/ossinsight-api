@@ -23,11 +23,11 @@ export class MysqlQueryExecutor<T> implements QueryExecutor<T> {
     }
   }
 
-  async executeWithConn(sql: string, connection: PoolConnection): Promise<T> {
+  async executeWithConn(sql: string, connection: PoolConnection, ...values: any): Promise<T> {
     return new Promise((resolve, reject) => {
       this.logger.debug('Executing sql by connection<%d>\n %s', connection.threadId, sql)
       const end = tidbQueryTimer.startTimer()
-      connection.query(sql, (err, rows) => {
+      connection.query(sql, values, (err, rows) => {
         end()
         if (err) {
           reject(err)
