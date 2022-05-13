@@ -8,6 +8,9 @@ WITH issues_with_latest_repo_name AS (
     USE INDEX(index_github_events_on_repo_id)
     WHERE
         type = 'IssuesEvent' AND repo_id IN (41986369, 16563587)
+        -- Exclude Bots
+        AND actor_login NOT LIKE '%bot%'
+        AND actor_login NOT IN (SELECT login FROM blacklist_users)
 ), acc AS (
     SELECT
         event_month,
