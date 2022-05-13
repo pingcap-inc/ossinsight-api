@@ -7,7 +7,7 @@ WITH issues_with_latest_repo_name AS (
     FROM github_events
     USE INDEX(index_github_events_on_repo_id)
     WHERE
-        type = 'IssuesEvent' AND repo_id IN (41986369, 16563587)
+        type = 'IssuesEvent' AND repo_id IN (41986369, 16563587, 105944401)
         -- Exclude Bots
         AND actor_login NOT LIKE '%bot%'
         AND actor_login NOT IN (SELECT login FROM blacklist_users)

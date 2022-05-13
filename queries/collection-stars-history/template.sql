@@ -7,7 +7,7 @@ WITH prs_with_latest_repo_name AS (
     FROM github_events
     USE INDEX(index_github_events_on_repo_id)
     WHERE
-        type = 'WatchEvent' AND repo_id IN (41986369, 16563587)
+        type = 'WatchEvent' AND repo_id IN (41986369, 16563587, 105944401)
 ), acc AS (
     SELECT
         event_month,
