@@ -106,7 +106,7 @@ async function main () {
 }
 
 async function prefetchQueries(
-  queryExecutor: MysqlQueryExecutor<unknown>,
+  queryExecutor: MysqlQueryExecutor,
   redisClient: RedisClientType<RedisDefaultModules & RedisModules, RedisScripts>,
   ghEventService: GHEventService,
   collectionService: CollectionService,

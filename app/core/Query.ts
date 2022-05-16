@@ -2,7 +2,7 @@ import {readFile} from 'fs/promises'
 import path from 'path'
 import {DateTime, Duration} from "luxon";
 import type { QuerySchema } from '../../params.schema'
-import {MysqlQueryExecutor} from "./MysqlQueryExecutor";
+import {MysqlQueryExecutor, Result} from "./MysqlQueryExecutor";
 import Cache, {CachedData, MAX_CACHE_TIME} from "./Cache";
 import {RedisClientType, RedisDefaultModules, RedisModules, RedisScripts} from "redis";
 import consola from "consola";
@@ -10,7 +10,6 @@ import {PoolConnection} from "mysql2";
 import {dataQueryTimer, measure, readConfigTimer, tidbQueryCounter} from "../metrics";
 import GHEventService from "../services/GHEventService";
 import CollectionService from '../services/CollectionService';
-import { CollectionItem } from 'yaml/dist/parse/cst';
 
 export enum ParamType {
   ARRAY = 'array',
@@ -161,10 +160,6 @@ function verifyParam(name: string, value: any, pattern?: string, paramTemplate?:
   return targetValue;
 }
 
-export interface QueryExecutor<T> {
-  execute (sql: string): Promise<T>
-}
-
 const logger = consola.withTag('query')
 
 export default class Query {
@@ -177,7 +172,7 @@ export default class Query {
   constructor(
     public readonly name: string,
     public readonly redisClient: RedisClientType<RedisDefaultModules & RedisModules, RedisScripts>,
-    public readonly executor: MysqlQueryExecutor<unknown>,
+    public readonly executor: MysqlQueryExecutor,
     public readonly ghEventService: GHEventService,
     public readonly collectionService: CollectionService
   ) {
@@ -222,11 +217,11 @@ export default class Query {
           const start = DateTime.now()
           tidbQueryCounter.labels({ query: this.name, phase: 'start' }).inc()
 
-          let data;
+          let res: Result;
           if (conn) {
-            data = await this.executor.executeWithConn(sql, conn)
+            res = await this.executor.executeWithConn(sql, conn)
           } else {
-            data = await this.executor.execute(sql)
+            res = await this.executor.execute(sql)
           }
 
           const end = DateTime.now()
@@ -238,7 +233,8 @@ export default class Query {
             spent: end.diff(start).as('seconds'),
             sql,
             expiresAt: cacheHours === -1 ? MAX_CACHE_TIME : end.plus({hours: cacheHours}),
-            data: data as any
+            fields: res.fields,
+            data: res.rows as any
           }
         } catch (e) {
           tidbQueryCounter.labels({ query: this.name, phase: 'error' }).inc()

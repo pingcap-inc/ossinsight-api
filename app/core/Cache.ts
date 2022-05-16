@@ -14,9 +14,9 @@ export class NeedPrefetchError extends Error {
 }
 
 export interface CachedData<T> {
-  expiresAt: DateTime
-  data: T
-  [key: string]: any
+  expiresAt: DateTime;
+  data: T;
+  [key: string]: any;
 }
 
 const runningCaches = new Map<string, Cache<unknown>>()

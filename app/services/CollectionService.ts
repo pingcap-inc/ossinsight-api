@@ -34,13 +34,14 @@ export class BadParamsError extends Error {
 export default class CollectionService {
 
   constructor(
-    readonly executor: MysqlQueryExecutor<unknown>,
+    readonly executor: MysqlQueryExecutor,
     public readonly redisClient: RedisClientType<RedisDefaultModules & RedisModules, RedisScripts>,
   ) {
   }
 
   async getOSDBRepoGroups() {
-    const repos = await this.executor.execute('select id, name, group_name from osdb_repos;') as Repo[];
+    const res = await this.executor.execute('select id, name, group_name from osdb_repos;');
+    const repos = res.rows as Repo[]
 
     if (Array.isArray(repos)) {
       const repoGroupMap = new Map();
@@ -81,7 +82,7 @@ export default class CollectionService {
           const start = DateTime.now()
           tidbQueryCounter.labels({ query: cacheKey, phase: 'start' }).inc()
 
-          let data = await this.executor.execute(sql)
+          const { fields, rows } = await this.executor.execute(sql)
 
           const end = DateTime.now()
           tidbQueryCounter.labels({ query: cacheKey, phase: 'success' }).inc()
@@ -92,7 +93,8 @@ export default class CollectionService {
             spent: end.diff(start).as('seconds'),
             sql,
             expiresAt: end.plus({hours: cacheHours}),
-            data: data as any
+            fields: fields,
+            data: rows as any
           }
         } catch (e) {
           tidbQueryCounter.labels({ query: cacheKey, phase: 'error' }).inc()
@@ -127,7 +129,7 @@ export default class CollectionService {
           const start = DateTime.now()
           tidbQueryCounter.labels({ query: cacheKey, phase: 'start' }).inc()
 
-          let data = await this.executor.execute(sql)
+          const { fields, rows } = await this.executor.execute(sql)
 
           const end = DateTime.now()
           tidbQueryCounter.labels({ query: cacheKey, phase: 'success' }).inc()
@@ -138,7 +140,8 @@ export default class CollectionService {
             spent: end.diff(start).as('seconds'),
             sql,
             expiresAt: end.plus({hours: cacheHours}),
-            data: data as any
+            fields: fields,
+            data: rows as any
           }
         } catch (e) {
           tidbQueryCounter.labels({ query: cacheKey, phase: 'error' }).inc()
