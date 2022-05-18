@@ -55,7 +55,7 @@ SELECT
     ilm.`rank` AS issues_rank_last_month,
     ((icm.total - ilm.total) / ilm.total) * 100 AS issues_mom,
     (icm.`rank` - ilm.`rank`) AS issues_rank_mom,
-    igr.total
+    igr.total AS issues_total
 FROM issues_group_by_repo igr
 JOIN issues_current_month icm ON igr.repo_name = icm.repo_name
 JOIN issues_last_month ilm ON icm.repo_name = ilm.repo_name
