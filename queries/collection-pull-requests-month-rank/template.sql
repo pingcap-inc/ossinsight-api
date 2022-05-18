@@ -49,14 +49,14 @@ SELECT
     DATE_FORMAT(date_sub(now(), interval DAYOFMONTH(now()) day), '%Y-%m') AS current_month,
     DATE_FORMAT(date_sub(date_sub(now(), interval DAYOFMONTH(now()) day), interval 1 month), '%Y-%m') AS last_month,
     -- PRs
-    pcm.total AS prs_current_month,
-    pcm.`rank` AS prs_rank_current_month,
-    plm.total AS prs_last_month,
-    plm.`rank` AS prs_rank_last_month,
-    ((pcm.total - plm.total) / plm.total) * 100 AS prs_mom,
-    (pcm.`rank` - plm.`rank`) AS prs_rank_mom,
-    pgr.total AS prs_total
+    pcm.total AS current_month_total,
+    pcm.`rank` AS current_month_rank,
+    plm.total AS last_month_total,
+    plm.`rank` AS last_month_rank,
+    ((pcm.total - plm.total) / plm.total) * 100 AS total_mom,
+    (pcm.`rank` - plm.`rank`) AS rank_mom,
+    pgr.total AS total
 FROM prs_group_by_repo pgr
 JOIN prs_current_month pcm ON pgr.repo_name = pcm.repo_name
 JOIN prs_last_month plm ON pcm.repo_name = plm.repo_name
-;
+ORDER BY current_month_rank;

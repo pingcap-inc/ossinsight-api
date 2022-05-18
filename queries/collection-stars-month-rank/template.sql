@@ -47,14 +47,14 @@ SELECT
     DATE_FORMAT(date_sub(now(), interval DAYOFMONTH(now()) day), '%Y-%m') AS current_month,
     DATE_FORMAT(date_sub(date_sub(now(), interval DAYOFMONTH(now()) day), interval 1 month), '%Y-%m') AS last_month,
     -- Stars
-    scm.total AS stars_current_month,
-    scm.`rank` AS stars_rank_current_month,
-    slm.total AS stars_last_month,
-    slm.`rank` AS stars_rank_last_month,
-    ((scm.total - slm.total) / slm.total) * 100 AS stars_mom,
-    (scm.`rank` - slm.`rank`) AS stars_rank_mom,
-    sgr.total AS stars_total
+    scm.total AS current_month_total,
+    scm.`rank` AS current_month_rank,
+    slm.total AS last_month_total,
+    slm.`rank` AS last_month_rank,
+    ((scm.total - slm.total) / slm.total) * 100 AS total_mom,
+    (scm.`rank` - slm.`rank`) AS rank_mom,
+    sgr.total AS total
 FROM stars_group_by_repo sgr 
 JOIN stars_current_month scm ON sgr.repo_name = scm.repo_name
 JOIN stars_last_month slm ON scm.repo_name = slm.repo_name
-;
+ORDER BY current_month_rank;

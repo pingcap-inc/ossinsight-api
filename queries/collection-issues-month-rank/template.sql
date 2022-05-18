@@ -49,13 +49,14 @@ SELECT
     DATE_FORMAT(date_sub(now(), interval DAYOFMONTH(now()) day), '%Y-%m') AS current_month,
     DATE_FORMAT(date_sub(date_sub(now(), interval DAYOFMONTH(now()) day), interval 1 month), '%Y-%m') AS last_month,
     -- Issues
-    icm.total AS issues_current_month,
-    icm.`rank` AS issues_rank_current_month,
-    ilm.total AS issues_last_month,
-    ilm.`rank` AS issues_rank_last_month,
-    ((icm.total - ilm.total) / ilm.total) * 100 AS issues_mom,
-    (icm.`rank` - ilm.`rank`) AS issues_rank_mom,
-    igr.total AS issues_total
+    icm.total AS current_month_total,
+    icm.`rank` AS current_month_rank,
+    ilm.total AS last_month_total,
+    ilm.`rank` AS last_month_rank,
+    ((icm.total - ilm.total) / ilm.total) * 100 AS total_mom,
+    (icm.`rank` - ilm.`rank`) AS rank_mom,
+    igr.total AS total
 FROM issues_group_by_repo igr
 JOIN issues_current_month icm ON igr.repo_name = icm.repo_name
 JOIN issues_last_month ilm ON icm.repo_name = ilm.repo_name
+ORDER BY current_month_rank;
