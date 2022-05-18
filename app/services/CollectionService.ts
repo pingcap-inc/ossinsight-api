@@ -108,7 +108,7 @@ export default class CollectionService {
   }
 
   async getCollectionRepos(collectionId: number): Promise<CachedData<CollectionItem[]>> {
-    const cacheKey = "collection:items";
+    const cacheKey = `collection:items:${collectionId}`;
     const cacheHours = 1;
     const cache = new Cache<CollectionItem[]>(this.redisClient, cacheKey, cacheHours, cacheHours, false, true);
 
