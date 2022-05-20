@@ -32,7 +32,7 @@ WITH issues AS (
         event_month,
         repo_name,
         total,
-        RANK() OVER(PARTITION BY event_month ORDER BY total DESC) AS `rank`
+        ROW_NUMBER() OVER(PARTITION BY event_month ORDER BY total DESC) AS `rank`
     FROM issues_group_by_month sgn
     WHERE event_month = DATE_FORMAT(date_sub(now(), interval DAYOFMONTH(now()) day), '%Y-%m-01')
 ), issues_last_month AS (
@@ -40,7 +40,7 @@ WITH issues AS (
         event_month,
         repo_name,
         total,
-        RANK() OVER(PARTITION BY event_month ORDER BY total DESC) AS `rank`
+        ROW_NUMBER() OVER(PARTITION BY event_month ORDER BY total DESC) AS `rank`
     FROM issues_group_by_month sgn
     WHERE event_month = DATE_FORMAT(date_sub(date_sub(now(), interval DAYOFMONTH(now()) day), interval 1 month), '%Y-%m-01')
 )

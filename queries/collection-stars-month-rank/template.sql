@@ -1,9 +1,9 @@
 WITH stars AS (
     SELECT
         event_month,
-        actor_login,
-        FIRST_VALUE(repo_name) OVER (PARTITION BY actor_login ORDER BY created_at DESC) AS repo_name,
-        ROW_NUMBER() OVER(PARTITION BY actor_id) AS row_num
+        actor_id,
+        FIRST_VALUE(repo_name) OVER (PARTITION BY repo_id ORDER BY created_at DESC) AS repo_name,
+        ROW_NUMBER() OVER(PARTITION BY repo_id, actor_id) AS row_num
     FROM github_events
     USE INDEX(index_github_events_on_repo_id)
     WHERE
@@ -13,7 +13,7 @@ WITH stars AS (
     SELECT
         event_month,
         repo_name,
-        count(*) AS total
+        count(DISTINCT actor_id) AS total
     FROM stars
     WHERE row_num = 1
     GROUP BY event_month, repo_name
@@ -21,7 +21,7 @@ WITH stars AS (
 ), stars_group_by_repo AS (
     SELECT
         repo_name,
-        count(*) AS total
+        count(DISTINCT actor_id) AS total
     FROM stars
     GROUP BY repo_name
     ORDER BY repo_name
@@ -30,7 +30,7 @@ WITH stars AS (
         event_month,
         repo_name,
         total,
-        RANK() OVER(PARTITION BY event_month ORDER BY total DESC) AS `rank`
+        ROW_NUMBER() OVER(PARTITION BY event_month ORDER BY total DESC) AS `rank`
     FROM stars_group_by_month sgn
     WHERE event_month = DATE_FORMAT(date_sub(now(), interval DAYOFMONTH(now()) day), '%Y-%m-01')
 ), stars_last_month AS (
@@ -38,7 +38,7 @@ WITH stars AS (
         event_month,
         repo_name,
         total,
-        RANK() OVER(PARTITION BY event_month ORDER BY total DESC) AS `rank`
+        ROW_NUMBER() OVER(PARTITION BY event_month ORDER BY total DESC) AS `rank`
     FROM stars_group_by_month sgn
     WHERE event_month = DATE_FORMAT(date_sub(date_sub(now(), interval DAYOFMONTH(now()) day), interval 1 month), '%Y-%m-01')
 )

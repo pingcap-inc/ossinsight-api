@@ -31,6 +31,6 @@ SELECT
     event_year,
     repo_name,
     total,
-    RANK() OVER (PARTITION BY event_year ORDER BY total DESC) AS `rank`
+    ROW_NUMBER() OVER (PARTITION BY event_year ORDER BY total DESC) AS `rank`
 FROM acc_dist
 ;
