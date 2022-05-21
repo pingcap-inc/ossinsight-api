@@ -3,7 +3,7 @@ WITH prs_with_latest_repo_name AS (
         event_month,
         actor_id,
         FIRST_VALUE(repo_name) OVER (PARTITION BY repo_id ORDER BY created_at DESC) AS repo_name,
-        ROW_NUMBER() OVER(PARTITION BY actor_id) AS row_num
+        ROW_NUMBER() OVER(PARTITION BY repo_id, actor_id) AS row_num
     FROM github_events
     USE INDEX(index_github_events_on_repo_id)
     WHERE
@@ -17,7 +17,7 @@ WITH prs_with_latest_repo_name AS (
     WHERE row_num = 1
     ORDER BY 1
 )
-SELECT event_month, repo_name, ANY_VALUE(total) AS total
+SELECT event_month, repo_name, total
 FROM acc
 GROUP BY 1, 2
 ORDER BY 1
