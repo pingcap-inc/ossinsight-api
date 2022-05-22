@@ -1,9 +1,9 @@
 WITH stars AS (
     SELECT
         event_month,
-        actor_id,
+        actor_login,
         FIRST_VALUE(repo_name) OVER (PARTITION BY repo_id ORDER BY created_at DESC) AS repo_name,
-        ROW_NUMBER() OVER(PARTITION BY repo_id, actor_id) AS row_num
+        ROW_NUMBER() OVER(PARTITION BY repo_id, actor_login) AS row_num
     FROM github_events
     USE INDEX(index_github_events_on_repo_id)
     WHERE
@@ -13,7 +13,7 @@ WITH stars AS (
     SELECT
         event_month,
         repo_name,
-        count(DISTINCT actor_id) AS total
+        count(DISTINCT actor_login) AS total
     FROM stars
     WHERE row_num = 1
     GROUP BY event_month, repo_name
@@ -21,7 +21,7 @@ WITH stars AS (
 ), stars_group_by_repo AS (
     SELECT
         repo_name,
-        count(DISTINCT actor_id) AS total
+        count(DISTINCT actor_login) AS total
     FROM stars
     GROUP BY repo_name
     ORDER BY repo_name
