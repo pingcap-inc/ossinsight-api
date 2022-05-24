@@ -33,4 +33,5 @@ SELECT
     total,
     ROW_NUMBER() OVER (PARTITION BY event_year ORDER BY total DESC) AS `rank`
 FROM acc_dist
+ORDER BY event_year, total DESC
 ;
