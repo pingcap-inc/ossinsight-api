@@ -251,8 +251,8 @@ export default class Query {
   async explain <T> (params: Record<string, any>, refreshCache: boolean = false, conn?: PoolConnection): Promise<CachedData<T>> {
     await this.ready();
     const key = `explain-query:${this.name}:${this.queryDef!.params.map(p => params[p.name]).join('_')}`;
-    const { cacheHours = -1, refreshHours = -1, onlyFromCache = false } = this.queryDef!;
-    const cache = new Cache<T>(this.redisClient, key, cacheHours, refreshHours, onlyFromCache, refreshCache);
+    const { cacheHours = -1, refreshHours = -1 } = this.queryDef!;
+    const cache = new Cache<T>(this.redisClient, key, cacheHours, refreshHours, false, refreshCache);
 
     return cache.load(async () => {
       return await measure(dataQueryTimer, async () => {
@@ -296,8 +296,8 @@ export default class Query {
   async trace <T> (params: Record<string, any>, refreshCache: boolean = false, conn?: PoolConnection): Promise<CachedData<T>> {
     await this.ready();
     const key = `trace-query:${this.name}:${this.queryDef!.params.map(p => params[p.name]).join('_')}`;
-    const { cacheHours = -1, refreshHours = -1, onlyFromCache = false } = this.queryDef!;
-    const cache = new Cache<T>(this.redisClient, key, cacheHours, refreshHours, onlyFromCache, refreshCache);
+    const { cacheHours = -1, refreshHours = -1 } = this.queryDef!;
+    const cache = new Cache<T>(this.redisClient, key, cacheHours, refreshHours, false, refreshCache);
 
     return cache.load(async () => {
       return await measure(dataQueryTimer, async () => {
