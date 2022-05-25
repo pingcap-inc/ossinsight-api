@@ -277,7 +277,7 @@ export default class Query {
             params: params,
             requestedAt: start.toISO(),
             spent: end.diff(start).as('seconds'),
-            sql,
+            sql: explainSQL,
             expiresAt: cacheHours === -1 ? MAX_CACHE_TIME : end.plus({hours: cacheHours}),
             fields: explainRes.fields,
             data: explainRes.rows as any,
@@ -285,7 +285,7 @@ export default class Query {
         } catch (e) {
           tidbQueryCounter.labels({ query: this.name, phase: 'error' }).inc()
           if (e) {
-            (e as any).sql = sql
+            (e as any).sql = explainSQL
           }
           throw e
         }
@@ -322,7 +322,7 @@ export default class Query {
             params: params,
             requestedAt: start.toISO(),
             spent: end.diff(start).as('seconds'),
-            sql,
+            sql: traceSQL,
             expiresAt: cacheHours === -1 ? MAX_CACHE_TIME : end.plus({hours: cacheHours}),
             fields: traceRes.fields,
             data: traceRes.rows as any,
@@ -330,7 +330,7 @@ export default class Query {
         } catch (e) {
           tidbQueryCounter.labels({ query: this.name, phase: 'error' }).inc()
           if (e) {
-            (e as any).sql = sql
+            (e as any).sql = traceSQL
           }
           throw e
         }
