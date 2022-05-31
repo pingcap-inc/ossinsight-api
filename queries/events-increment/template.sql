@@ -1,0 +1,7 @@
+SELECT
+    COUNT(*) AS cnt,
+    max(created_at) AS latest_created_at
+FROM github_events
+WHERE
+    created_at BETWEEN FROM_UNIXTIME(1653944647) AND (UTC_TIMESTAMP - INTERVAL 5 MINUTE)
+    AND FROM_UNIXTIME(1653944647) > (UTC_TIMESTAMP - INTERVAL 30 MINUTE);
