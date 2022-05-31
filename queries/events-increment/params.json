@@ -1,5 +1,5 @@
 {
-  "cacheHours": 0,
+  "cacheHours": 0.0001,
   "refreshHours": 0,
   "params": [
     {
