@@ -1,5 +1,5 @@
 SELECT
-    actor_id, ANY_VALUE(actor_login) AS actor_login, COUNT(DISTINCT pr_or_issue_id) AS events
+    actor_id, ANY_VALUE(actor_login) AS actor_login, COUNT(DISTINCT pr_or_issue_id) AS pr_or_issues
 FROM github_events
 WHERE 
     repo_id = 41986369
