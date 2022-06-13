@@ -16,7 +16,7 @@ export interface QueryExecutor {
   execute (sql: string): Promise<Result>
 }
 
-export class MysqlQueryExecutor implements QueryExecutor {
+export class TiDBQueryExecutor implements QueryExecutor {
 
   private connections: Pool
   private logger: Consola

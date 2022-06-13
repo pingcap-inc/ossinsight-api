@@ -1,4 +1,4 @@
-import {MysqlQueryExecutor} from "../core/MysqlQueryExecutor";
+import {TiDBQueryExecutor} from "../core/TiDBQueryExecutor";
 import Cache, {CachedData} from "../core/cache/Cache";
 import { dataQueryTimer, measure, tidbQueryCounter } from "../metrics";
 import { DateTime } from "luxon";
@@ -34,7 +34,7 @@ export class BadParamsError extends Error {
 export default class CollectionService {
 
   constructor(
-    readonly executor: MysqlQueryExecutor,
+    readonly executor: TiDBQueryExecutor,
     public readonly cacheBuilder: CacheBuilder,
   ) {
   }

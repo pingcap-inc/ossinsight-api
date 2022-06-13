@@ -2,7 +2,7 @@ import {readFile} from 'fs/promises'
 import path from 'path'
 import {DateTime, Duration} from "luxon";
 import type { QuerySchema } from '../../params.schema'
-import {MysqlQueryExecutor, Result} from "./MysqlQueryExecutor";
+import {TiDBQueryExecutor, Result} from "./TiDBQueryExecutor";
 import Cache, {CachedData} from "./cache/Cache";
 import consola from "consola";
 import {PoolConnection} from "mysql2";
@@ -165,7 +165,7 @@ export default class Query {
   constructor(
     public readonly name: string,
     public readonly cacheBuilder: CacheBuilder,
-    public readonly executor: MysqlQueryExecutor,
+    public readonly executor: TiDBQueryExecutor,
     public readonly ghEventService: GHEventService,
     public readonly collectionService: CollectionService
   ) {

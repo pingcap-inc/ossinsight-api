@@ -1,6 +1,6 @@
 import Router from "koa-router";
 import Query, {SQLExecuteError} from "./core/Query";
-import {MysqlQueryExecutor} from "./core/MysqlQueryExecutor";
+import {TiDBQueryExecutor} from "./core/TiDBQueryExecutor";
 import {DefaultState} from "koa";
 import type {ContextExtends} from "../index";
 import GhExecutor from "./core/GhExecutor";
@@ -55,7 +55,7 @@ export default async function server(router: Router<DefaultState, ContextExtends
   await redisClient.connect();
 
   // Init MySQL Executor. 
-  const queryExecutor = new MysqlQueryExecutor({
+  const queryExecutor = new TiDBQueryExecutor({
     host: process.env.DB_HOST,
     port: parseInt(process.env.DB_PORT || '3306'),
     database: process.env.DB_DATABASE,

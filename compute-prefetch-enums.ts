@@ -4,7 +4,7 @@ import * as fsp from 'fs/promises'
 import * as dotenv from "dotenv";
 import asyncPool from "tiny-async-pool";
 import type {Params, QuerySchema} from './params.schema'
-import {MysqlQueryExecutor} from "./app/core/MysqlQueryExecutor";
+import {TiDBQueryExecutor} from "./app/core/TiDBQueryExecutor";
 import Query from "./app/core/Query";
 import {createClient} from "redis";
 import consola, {JSONReporter} from "consola";
@@ -13,7 +13,6 @@ import { validateProcessEnv } from './app/env';
 import GHEventService from "./app/services/GHEventService";
 import CollectionService from './app/services/CollectionService';
 import CacheBuilder from './app/core/cache/CacheBuilder';
-import QueryFactory from './app/core/QueryFactory';
 
 // Load environments.
 dotenv.config({ path: __dirname+'/.env.template', override: true });
@@ -83,7 +82,7 @@ async function main () {
   await redisClient.connect();
 
   // Init mysql client.
-  const queryExecutor = new MysqlQueryExecutor({
+  const queryExecutor = new TiDBQueryExecutor({
     host: process.env.DB_HOST,
     port: parseInt(process.env.DB_PORT || '3306'),
     database: process.env.DB_DATABASE,
@@ -112,7 +111,7 @@ async function main () {
 }
 
 async function prefetchQueries(
-  queryExecutor: MysqlQueryExecutor,
+  queryExecutor: TiDBQueryExecutor,
   cacheBuilder: CacheBuilder,
   ghEventService: GHEventService,
   collectionService: CollectionService,
@@ -201,7 +200,7 @@ async function prefetchQueries(
   await asyncPool(PREFETCH_CONCURRENT, queryJobs, async ({ id, queryName, params }) => {
     const qStart = new Date();
     // Do query with the rest parameter combines.
-    logger.info("[%d/%d] Prefetch query %s with params: %s", id, n, queryName, JSON.stringify(params));
+    logger.info("[%d/%d] PreFetch query %s with params: %s", id, n, queryName, JSON.stringify(params));
     const query = new Query(queryName, cacheBuilder, queryExecutor, ghEventService, collectionService)
     try {
       await query.run(params,true)

@@ -1,5 +1,5 @@
 import {RedisClientType, RedisDefaultModules, RedisModules, RedisScripts} from "redis";
-import { MysqlQueryExecutor } from "../MysqlQueryExecutor";
+import { TiDBQueryExecutor } from "../TiDBQueryExecutor";
 import Cache from './Cache'
 import CachedTableCacheProvider from "./CachedTableCacheProvider";
 import { CacheProvider } from "./CacheProvider";
@@ -14,7 +14,6 @@ export enum CacheProviderTypes {
 
 export default class CacheBuilder {
 
-
     private normalCacheProvider: CacheProvider;
 
     private cachedTableCacheProvider: CacheProvider;
@@ -22,16 +21,17 @@ export default class CacheBuilder {
     private redisCacheProvider: CacheProvider;
 
     constructor(
-        private readonly redisClient: RedisClientType<RedisDefaultModules & RedisModules, RedisScripts>,
-        private readonly queryExecutor: MysqlQueryExecutor
+        redisClient: RedisClientType<RedisDefaultModules & RedisModules, RedisScripts>,
+        queryExecutor: TiDBQueryExecutor
     ) {
         this.normalCacheProvider = new NormalTableCacheProvider(queryExecutor);
         this.cachedTableCacheProvider = new CachedTableCacheProvider(queryExecutor);
-        this.redisCacheProvider = new RedisCacheProvider(this.redisClient);
+        this.redisCacheProvider = new RedisCacheProvider(redisClient);
     }
 
     build(
-        cacheProvider: string, key: string, cacheHours: number, refreshHours: number, onlyFromCache: boolean, refreshCache?: boolean
+        cacheProvider: string, key: string, cacheHours: number, refreshHours: number, 
+        onlyFromCache?: boolean, refreshCache?: boolean
     ): Cache<any> {
         switch(cacheProvider) {
             case CacheProviderTypes.CACHED_TABLE:
@@ -41,7 +41,6 @@ export default class CacheBuilder {
             default:
                 return new Cache<any>(this.normalCacheProvider, key, cacheHours, refreshHours, onlyFromCache, refreshCache);
         }
-
-        
     }
+
 }

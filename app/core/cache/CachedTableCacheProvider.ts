@@ -1,5 +1,5 @@
 import consola from "consola";
-import { MysqlQueryExecutor, Result } from "../MysqlQueryExecutor";
+import { TiDBQueryExecutor } from "../TiDBQueryExecutor";
 import { CacheOption, CacheProvider } from "./CacheProvider";
 
 const logger = consola.withTag('cached-table-cache')
@@ -7,7 +7,7 @@ const logger = consola.withTag('cached-table-cache')
 export default class CachedTableCacheProvider implements CacheProvider {
 
     constructor(
-        private readonly tidbClient: MysqlQueryExecutor
+        private readonly tidbClient: TiDBQueryExecutor
     ) {
 
     }
