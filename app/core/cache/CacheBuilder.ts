@@ -1,4 +1,4 @@
-import {RedisClientType, RedisDefaultModules, RedisFunctions, RedisModules, RedisScripts} from "redis";
+import {RedisClientType, RedisDefaultModules, RedisModules, RedisScripts} from "redis";
 import { MysqlQueryExecutor } from "../MysqlQueryExecutor";
 import Cache from './Cache'
 import CachedTableCacheProvider from "./CachedTableCacheProvider";
@@ -22,7 +22,7 @@ export default class CacheBuilder {
     private redisCacheProvider: CacheProvider;
 
     constructor(
-        private readonly redisClient: RedisClientType<RedisDefaultModules & RedisModules, RedisFunctions, RedisScripts>,
+        private readonly redisClient: RedisClientType<RedisDefaultModules & RedisModules, RedisScripts>,
         private readonly queryExecutor: MysqlQueryExecutor
     ) {
         this.normalCacheProvider = new NormalTableCacheProvider(queryExecutor);
