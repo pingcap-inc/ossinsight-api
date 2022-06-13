@@ -16,6 +16,7 @@ const logger = consola.withTag('prefetch');
 
 async function main () {
   // Init logger.
+  logger.removeReporter();
   logger.addReporter(new FancyReporter({
     dateFormat: 'YYYY:MM:DD HH:mm:ss'
   }));
@@ -27,7 +28,7 @@ async function main () {
   await redisClient.on('error', (err) => console.log('Redis Client Error', err));
   await redisClient.connect();
 
-  // Init mysql client.
+  // Init TiDB client.
   const queryExecutor = new TiDBQueryExecutor({
     host: process.env.DB_HOST,
     port: parseInt(process.env.DB_PORT || '3306'),
@@ -37,9 +38,6 @@ async function main () {
     queueLimit: 10,
     decimalNumbers: true
   });
-
-  // Init Cache Builder.
-  const cacheBuilder = new CacheBuilder(redisClient, queryExecutor);
 
   logger.info("Ready Go...")
   for (let i = 0; i < Number.MAX_VALUE; i++) {
@@ -53,7 +51,7 @@ async function main () {
     WHERE expires > 0 AND DATE_ADD(updated_at, INTERVAL expires SECOND) < CURRENT_TIME;`);
 
     logger.info('Next round prefetch will come at: %s', DateTime.now().plus(Duration.fromObject({ minutes: 1 })));
-    await sleep(1000 * 60 * 1);    // sleep 1 hour.
+    await sleep(1000 * 20 * 1);    // sleep 20 minutes.
   }
 }
 
