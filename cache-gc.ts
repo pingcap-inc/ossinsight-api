@@ -4,8 +4,6 @@ import {createClient} from "redis";
 import consola, {FancyReporter} from "consola";
 import {DateTime, Duration} from "luxon";
 import { validateProcessEnv } from './app/env';
-import GHEventService from "./app/services/GHEventService";
-import CollectionService from './app/services/CollectionService';
 import CacheBuilder from './app/core/cache/CacheBuilder';
 
 // Load environments.
@@ -20,7 +18,7 @@ async function main () {
   // Init logger.
   logger.addReporter(new FancyReporter({
     dateFormat: 'YYYY:MM:DD HH:mm:ss'
-  }),);
+  }));
 
   // Init redis client.
   const redisClient = createClient({
@@ -43,10 +41,6 @@ async function main () {
   // Init Cache Builder.
   const cacheBuilder = new CacheBuilder(redisClient, queryExecutor);
 
-  // Init Services.
-  const ghEventService = new GHEventService(queryExecutor);
-  const collectionService = new CollectionService(queryExecutor, cacheBuilder);
-
   logger.info("Ready Go...")
   for (let i = 0; i < Number.MAX_VALUE; i++) {
     logger.info(`Compute round ${i + 1}.`);
@@ -59,7 +53,7 @@ async function main () {
     WHERE expires > 0 AND DATE_ADD(updated_at, INTERVAL expires SECOND) < CURRENT_TIME;`);
 
     logger.info('Next round prefetch will come at: %s', DateTime.now().plus(Duration.fromObject({ minutes: 1 })));
-    await sleep(1000 * 60 * 1);    // sleep 30 minutes.
+    await sleep(1000 * 60 * 1);    // sleep 1 hour.
   }
 }
 
