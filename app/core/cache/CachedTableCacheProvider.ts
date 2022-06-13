@@ -13,7 +13,7 @@ export default class CachedTableCacheProvider implements CacheProvider {
     }
     
     async set(key: string, value: string, options?: CacheOption): Promise<void> {
-        const EX = options?.EX || 'null';
+        const EX = options?.EX || -1;
         const sql = `INSERT INTO cached_table_cache(cache_key, cache_value, expires) 
         VALUES (?, ?, ?)
         ON DUPLICATE KEY UPDATE cache_value = VALUES(cache_value), expires = VALUES(expires);`;
