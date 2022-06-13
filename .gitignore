@@ -8,3 +8,5 @@ schemas
 .DS_Store
 log
 test/result/*.log
+.pnpm-debug.log
+.vscode
