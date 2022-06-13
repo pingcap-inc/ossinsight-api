@@ -30,7 +30,7 @@ export default class CacheBuilder {
     }
 
     build(
-        cacheProvider: string, key: string, cacheHours: number, refreshHours: number, 
+        cacheProvider: string = CacheProviderTypes.CACHED_TABLE, key: string, cacheHours: number, refreshHours: number, 
         onlyFromCache?: boolean, refreshCache?: boolean
     ): Cache<any> {
         switch(cacheProvider) {
@@ -38,8 +38,10 @@ export default class CacheBuilder {
                 return new Cache<any>(this.normalCacheProvider, key, cacheHours, refreshHours, onlyFromCache, refreshCache);
             case CacheProviderTypes.REDIS:
                 return new Cache<any>(this.redisCacheProvider, key, cacheHours, refreshHours, onlyFromCache, refreshCache);
-            default:
+            case CacheProviderTypes.CACHED_TABLE:
                 return new Cache<any>(this.cachedTableCacheProvider, key, cacheHours, refreshHours, onlyFromCache, refreshCache);
+            default:
+                throw new Error(`Invalid cache provider type ${cacheProvider}.`);
         }
     }
 

@@ -200,7 +200,7 @@ export default class Query {
   ): Promise<CachedData<T>> {
     await this.ready();
 
-    const { cacheHours = -1, refreshHours = -1, onlyFromCache = false, cacheProvider = CacheProviderTypes.NORMAL_TABLE } = this.queryDef!;
+    const { cacheHours = -1, refreshHours = -1, onlyFromCache = false, cacheProvider } = this.queryDef!;
     const queryName = this.queryDef!.name || this.name;
     const cacheKey = this.getQueryKey('query', queryName, this.queryDef!, params);
     const cache = this.cacheBuilder.build(
@@ -246,7 +246,7 @@ export default class Query {
   }
 
   async explain <T> (params: Record<string, any>, refreshCache: boolean = false, conn?: PoolConnection): Promise<CachedData<T>> {
-    const { cacheHours = -1, refreshHours = -1, onlyFromCache = false, cacheProvider = CacheProviderTypes.NORMAL_TABLE } = this.queryDef!;
+    const { cacheHours = -1, refreshHours = -1, onlyFromCache = false, cacheProvider } = this.queryDef!;
     const queryName = this.queryDef!.name || this.name;
     const cacheKey = this.getQueryKey('explain-query', queryName, this.queryDef!, params);
     const cache = this.cacheBuilder.build(
@@ -293,7 +293,7 @@ export default class Query {
   }
 
   async trace <T> (params: Record<string, any>, refreshCache: boolean = false, conn?: PoolConnection): Promise<CachedData<T>> {
-    const { cacheHours = -1, refreshHours = -1, onlyFromCache = false, cacheProvider = CacheProviderTypes.NORMAL_TABLE } = this.queryDef!;
+    const { cacheHours = -1, refreshHours = -1, onlyFromCache = false, cacheProvider } = this.queryDef!;
     const queryName = this.queryDef!.name || this.name;
     const cacheKey = this.getQueryKey('trace-query', queryName, this.queryDef!, params);
     const cache = this.cacheBuilder.build(
