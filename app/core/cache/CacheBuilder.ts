@@ -34,12 +34,12 @@ export default class CacheBuilder {
         onlyFromCache?: boolean, refreshCache?: boolean
     ): Cache<any> {
         switch(cacheProvider) {
-            case CacheProviderTypes.CACHED_TABLE:
-                return new Cache<any>(this.cachedTableCacheProvider, key, cacheHours, refreshHours, onlyFromCache, refreshCache);
+            case CacheProviderTypes.NORMAL_TABLE:
+                return new Cache<any>(this.normalCacheProvider, key, cacheHours, refreshHours, onlyFromCache, refreshCache);
             case CacheProviderTypes.REDIS:
                 return new Cache<any>(this.redisCacheProvider, key, cacheHours, refreshHours, onlyFromCache, refreshCache);
             default:
-                return new Cache<any>(this.normalCacheProvider, key, cacheHours, refreshHours, onlyFromCache, refreshCache);
+                return new Cache<any>(this.cachedTableCacheProvider, key, cacheHours, refreshHours, onlyFromCache, refreshCache);
         }
     }
 
