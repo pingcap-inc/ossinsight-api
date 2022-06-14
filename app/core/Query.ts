@@ -188,6 +188,7 @@ export default class Query {
       }
     })
   }
+
   ready(): Promise<boolean> {
     return this.loadingPromise
   }
@@ -246,6 +247,8 @@ export default class Query {
   }
 
   async explain <T> (params: Record<string, any>, refreshCache: boolean = false, conn?: PoolConnection): Promise<CachedData<T>> {
+    await this.ready();
+
     const { cacheHours = -1, refreshHours = -1, onlyFromCache = false, cacheProvider } = this.queryDef!;
     const queryName = this.queryDef!.name || this.name;
     const cacheKey = this.getQueryKey('explain-query', queryName, this.queryDef!, params);
@@ -293,6 +296,8 @@ export default class Query {
   }
 
   async trace <T> (params: Record<string, any>, refreshCache: boolean = false, conn?: PoolConnection): Promise<CachedData<T>> {
+    await this.ready();
+
     const { cacheHours = -1, refreshHours = -1, onlyFromCache = false, cacheProvider } = this.queryDef!;
     const queryName = this.queryDef!.name || this.name;
     const cacheKey = this.getQueryKey('trace-query', queryName, this.queryDef!, params);
