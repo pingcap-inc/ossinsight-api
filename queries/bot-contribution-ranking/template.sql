@@ -13,4 +13,4 @@ WHERE
     )
 GROUP BY actor_id
 ORDER BY contributions DESC
-LIMIT 20
+LIMIT 50
